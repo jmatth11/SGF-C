@@ -1,0 +1,8 @@
+-I.
+-I/usr/local/include
+-Wall
+-Wextra
+-std=c11
+-L/usr/local/lib
+-lSDL3
+-lm
