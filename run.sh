@@ -1,1 +1,1 @@
-LD_LIBRARY_PATH=/usr/local/lib ./main
+LD_LIBRARY_PATH=/usr/local/lib ./bin/main
