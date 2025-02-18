@@ -1,8 +1,8 @@
 -I.
--I/usr/local/include
+-I./deps/sdl/include
 -Wall
 -Wextra
 -std=c11
--L/usr/local/lib
+-L./deps/sdl/build
 -lSDL3
 -lm

@@ -8,6 +8,6 @@ if [ ! -d ./deps/sdl ]; then
   mv $sdl_folder/* .
   rm -rf $sdl_folder
   cmake -S . -B build || exit 1
-  cmake --build build || exit 1
+  cmake --build build -j 4 || exit 1
   cd -
 fi
