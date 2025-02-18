@@ -1,17 +1,29 @@
-CC=clang
 CFLAGS=-Wall -Wextra -std=c11
-LIBS=-lSDL3 -lm -pthread
+LIBS=-L./deps/sdl/build -lSDL3 -lm -pthread
+WEB_LIBS=-L./libs -l:libSDL3.a
 OBJ=obj
 BIN=bin
-INCLUDES=-I.
-SOURCES=$(shell find . -name '*.c' -not -path './plugins/*' -not -path './deps/*')
+INCLUDES=-I. -I./deps/sdl/include
+SOURCES=$(shell find . -name '*.c' -not -path './plugins/*' -not -path './deps/*' -not -path './libs/*')
 OBJECTS=$(addprefix $(OBJ)/,$(SOURCES:%.c=%.o))
 DEBUG_OBJECTS=$(patsubst %.c, $(OBJ)/%-debug.o, $(SOURCES))
-DEPS=$(shell find . -name Makefile -printf '%h\n' | grep -v 'unittest' | grep -v '^.$$' | grep -v 'utf8-zig')
+DEPS=$(shell find . -maxdepth 3 -name Makefile -printf '%h\n' | grep -v 'unittest' | grep -v '^.$$')
+ifeq ($(ARCH), web)
+$(info emscripten)
+CC=emcc
+TARGET=index.html
+else
+$(info native)
+CC=clang
 TARGET=main
+endif
 
 .PHONY: all
 all: deps src
+
+.PHONY: web
+web:
+	$(CC) $(CFLAGS) $(INCLUDES) $(WEB_LIBS) -o $(TARGET) $(SOURCES)
 
 .PHONY: src
 src: $(OBJECTS)

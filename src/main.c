@@ -1,8 +1,3 @@
-#include "src/components/button.h"
-#include "src/logic/state.h"
-#include "src/types/components/button_types.h"
-#include "src/types/state.h"
-#include <SDL3/SDL_log.h>
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL.h>
@@ -10,6 +5,11 @@
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_rect.h>
+#include "src/components/button.h"
+#include "src/logic/state.h"
+#include "src/types/components/button_types.h"
+#include "src/types/state.h"
+#include <SDL3/SDL_log.h>
 
 #include "src/components/win.h"
 #include "src/types/win_types.h"

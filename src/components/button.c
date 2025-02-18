@@ -1,6 +1,5 @@
 #include "button.h"
 #include "src/types/components/button_types.h"
-#include <SDL3/SDL_oldnames.h>
 
 bool button_init(struct button_t *button, uint32_t id) {
   button->id = id;
