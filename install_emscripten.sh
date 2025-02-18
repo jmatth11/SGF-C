@@ -14,7 +14,7 @@ if [ ! -d ./deps/emsdk ]; then
   cd -
   mkdir -p ./emscripten/sdl_ttf
   cd ./emscripten/sdl_ttf
-  emcmake cmake ../../deps/sdl_ttf -DSDL3_DIR=../sdl || exit 1
+  emcmake cmake ../../deps/sdl_ttf -DSDL3_DIR=../../deps/sdl/build || exit 1
   emmake make -j4 || exit 1
 else
   cd ./deps/emsdk
