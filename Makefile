@@ -1,6 +1,6 @@
 CFLAGS=-Wall -Wextra -std=c11
-LIBS=-L./deps/sdl/build -lSDL3 -lm -pthread
-WEB_LIBS=-L./libs -l:libSDL3.a
+LIBS=-L./deps/sdl/build -L./deps/sdl_ttf/build -lSDL3 -lSDL3_ttf -lm -pthread
+WEB_LIBS=-L./deps/sdl/build -L./deps/sdl_ttf/build -l:libSDL3.a -l:libSDL3_ttf.a
 WEB_DIR=./web
 OBJ=obj
 BIN=bin

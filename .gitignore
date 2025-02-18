@@ -1,6 +1,6 @@
 bin
 obj
-libs
+emscripten
 deps
 emsdk
 
