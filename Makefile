@@ -1,6 +1,7 @@
 CFLAGS=-Wall -Wextra -std=c11
 LIBS=-L./deps/sdl/build -lSDL3 -lm -pthread
 WEB_LIBS=-L./libs -l:libSDL3.a
+WEB_DIR=./web
 OBJ=obj
 BIN=bin
 INCLUDES=-I. -I./deps/sdl/include
@@ -23,7 +24,7 @@ all: deps src
 
 .PHONY: web
 web:
-	$(CC) $(CFLAGS) $(INCLUDES) $(WEB_LIBS) -o $(TARGET) $(SOURCES)
+	$(CC) $(CFLAGS) $(INCLUDES) $(WEB_LIBS) -o $(WEB_DIR)/$(TARGET) $(SOURCES)
 
 .PHONY: src
 src: $(OBJECTS)
