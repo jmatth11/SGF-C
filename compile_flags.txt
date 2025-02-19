@@ -1,8 +1,11 @@
 -I.
 -I./deps/sdl/include
+-I./deps/sdl_ttf/include
 -Wall
 -Wextra
 -std=c11
 -L./deps/sdl/build
+-L./deps/sdl_ttf/build
 -lSDL3
+-lSDL3_ttf
 -lm
