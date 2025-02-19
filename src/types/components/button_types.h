@@ -6,10 +6,7 @@
 #include <SDL3/SDL_rect.h>
 #include <stdint.h>
 
-struct theme_t {
-  SDL_Color color;
-  // TODO add TTF
-};
+#include "src/types/theme_types.h"
 
 typedef void(*button_callback)(SDL_MouseButtonEvent *e, void* context);
 
