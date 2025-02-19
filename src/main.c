@@ -1,3 +1,5 @@
+#include "SDL3/SDL_init.h"
+#include "SDL3_ttf/SDL_ttf.h"
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL.h>
@@ -25,9 +27,12 @@ static SDL_FRect rect = {
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   SDL_SetAppMetadata("Simple App", "1.0", "com.example.jmatth11");
-
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
+    return SDL_APP_FAILURE;
+  }
+  if (!TTF_Init()) {
+    SDL_Log("Couldn't initialize SDL_TTF: %s", SDL_GetError());
     return SDL_APP_FAILURE;
   }
   struct state_t *s = malloc(sizeof(struct state_t));
@@ -105,4 +110,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
   win_free(&main_win);
+  state_free((struct state_t*)appstate);
+  TTF_Quit();
 }
