@@ -1,14 +1,12 @@
 #ifndef GENERIC_STATE_TYPE_H
 #define GENERIC_STATE_TYPE_H
 
-#include <deps/array_template/array_template.h>
-
-#include "render_interface.h"
-
-generate_array_template(render, struct render_interface);
+#include "src/types/scene_types.h"
+#include "src/types/win_types.h"
 
 struct state_t {
-  render_array objects;
+  struct scene_t *current_scene;
+  struct win_t win;
 };
 
 #endif

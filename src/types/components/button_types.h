@@ -6,6 +6,7 @@
 #include <SDL3/SDL_rect.h>
 #include <stdint.h>
 
+#include "src/types/font_types.h"
 #include "src/types/theme_types.h"
 
 typedef void(*button_callback)(SDL_MouseButtonEvent *e, void* context);
@@ -16,6 +17,7 @@ struct button_t {
   struct theme_t theme;
   SDL_FRect rect;
   button_callback onClick;
+  struct label_t label;
 };
 
 #endif

@@ -1,17 +1,27 @@
 #include "state.h"
+#include "scene.h"
+#include "src/components/win.h"
+#include "src/types/scene_types.h"
 #include "src/types/state.h"
 
 bool state_init(struct state_t* s) {
-  if (!init_render_array(&s->objects, 10)) {
-    return false;
+  s->current_scene = NULL;
+  return true;
+}
+
+bool state_switch_scene(struct state_t *s, struct scene_t *scene) {
+  if (s->current_scene) {
+    s->current_scene->unload(s->current_scene);
+    scene_destroy(&s->current_scene);
+  }
+  s->current_scene = scene;
+  if (s->current_scene) {
+    s->current_scene->load(s->current_scene);
   }
   return true;
 }
 
-bool state_add_render(struct state_t *s, struct render_interface ri) {
-  return insert_render_array(&s->objects, ri);
-}
-
 void state_free(struct state_t* s) {
-  free_render_array(&s->objects);
+  state_switch_scene(s, NULL);
+  win_free(&s->win);
 }

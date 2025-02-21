@@ -16,15 +16,6 @@
 #include "src/components/win.h"
 #include "src/types/win_types.h"
 
-static struct win_t main_win;
-static struct button_t button;
-static SDL_FRect rect = {
-    .h = 40,
-    .w = 90,
-    .x = 30,
-    .y = 30,
-  };
-
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   SDL_SetAppMetadata("Simple App", "1.0", "com.example.jmatth11");
   if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -38,18 +29,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   struct state_t *s = malloc(sizeof(struct state_t));
   if (!state_init(s)) {
     SDL_Log("state failed to initialize");
-    return SDL_APP_FAILURE;
-  }
-  if (!button_init(&button, 1)) {
-    SDL_Log("button failed to initialize");
-    return SDL_APP_FAILURE;
-  }
-  button.rect = rect;
-  button.theme = (struct theme_t){
-    .color = {.r=0x06, .g=0x66, .b=0xaa, .a=0xff},
-  };
-  if (!state_add_render(s, button_get_render(&button))) {
-    SDL_Log("button could not be added to render pipeline");
     return SDL_APP_FAILURE;
   }
   *appstate = s;
