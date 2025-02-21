@@ -9,6 +9,7 @@ SOURCES=$(shell find . -name '*.c' -not -path './plugins/*' -not -path './deps/*
 OBJECTS=$(addprefix $(OBJ)/,$(SOURCES:%.c=%.o))
 DEBUG_OBJECTS=$(patsubst %.c, $(OBJ)/%-debug.o, $(SOURCES))
 DEPS=$(shell find . -maxdepth 3 -name Makefile -printf '%h\n' | grep -v 'unittest' | grep -v '^.$$')
+RESOURCE_DIR=./resources
 ifeq ($(ARCH), web)
 $(info emscripten)
 CC=emcc
@@ -24,7 +25,7 @@ all: deps src
 
 .PHONY: web
 web:
-	$(CC) $(CFLAGS) $(INCLUDES) $(WEB_LIBS) -o $(WEB_DIR)/$(TARGET) $(SOURCES)
+	$(CC) $(CFLAGS) $(INCLUDES) $(WEB_LIBS) -o $(WEB_DIR)/$(TARGET) $(SOURCES) --embed-file $(RESOURCE_DIR)
 
 .PHONY: src
 src: $(OBJECTS)
