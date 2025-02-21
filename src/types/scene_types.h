@@ -8,10 +8,10 @@
 struct scene_t;
 struct state_t;
 
-typedef bool(*load_fn)(struct scene_t *scene);
+typedef bool(*load_fn)(struct scene_t *scene, struct state_t *state);
 typedef bool(*update_fn)(struct scene_t *scene, struct state_t *state);
 typedef bool(*event_fn)(struct scene_t *scene, struct state_t *state, SDL_Event *event);
-typedef bool(*unload_fn)(struct scene_t *scene);
+typedef bool(*unload_fn)(struct scene_t *scene, struct state_t *state);
 
 struct scene_t {
   void *__internal;

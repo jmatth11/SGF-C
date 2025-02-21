@@ -6,6 +6,7 @@
 
 struct font_t {
   TTF_Font *font;
+  TTF_TextEngine *engine;
 };
 
 generate_array_template(font, struct font_t)
@@ -13,6 +14,7 @@ generate_array_template(font, struct font_t)
 struct font_manager_t {
   // TODO switch to hashmap lookup
   font_array fonts;
+  TTF_TextEngine *engine;
 };
 
 struct label_t {
