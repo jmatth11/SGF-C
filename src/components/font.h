@@ -10,11 +10,12 @@
 struct font_t;
 struct label_t;
 
-bool font_init(struct font_t *f, const char *font_file, float ptsize);
+bool font_init(struct font_t *f, SDL_Renderer *ren, const char *font_file, float ptsize);
 void font_free(struct font_t *f);
 
 bool label_init(struct label_t *l, struct font_t *f);
 bool label_set_text(struct label_t *l, const char *text, size_t length);
+bool label_render(struct label_t *l, float x, float y, SDL_Renderer *ren);
 void label_free(struct label_t *l);
 
 #endif
