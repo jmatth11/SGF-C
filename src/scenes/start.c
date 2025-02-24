@@ -1,20 +1,37 @@
 #include <stdio.h>
+#include "src/components/win.h"
 #include "start.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_rect.h"
 #include "src/components/button.h"
 #include "src/logic/scene.h"
 #include "src/types/state.h"
+#include "src/components/font.h"
 
 #define start_text "start"
 #define exit_text "exit"
+#define title_text "Jumper"
 
 bool scene_one_init(struct scene_one_t *s) {
+  (void)s;
   return true;
 }
 
 static bool load(struct scene_t *scene, struct state_t *state) {
+  SDL_Log("entering load function.\n");
   struct scene_one_t *local = (struct scene_one_t*)scene->__internal;
+  if (!label_init(&local->title, &state->font)) {
+    SDL_LogError(1, "could not initialize title.\n");
+    return false;
+  }
+  if (!label_set_text(&local->title, title_text, strlen(title_text))) {
+    SDL_LogError(1, "could not set text for title.\n");
+    return false;
+  }
+  SDL_Rect win_size = win_get_size(&state->win);
+  SDL_Rect title_size = label_get_size(&local->title);
+  // ignoring return
+  (void)label_set_center_pos(&local->title, win_size.w/2, title_size.h + 20);
   if (!button_init(&local->start_btn, 1, &state->font)) {
     return false;
   }
@@ -24,8 +41,8 @@ static bool load(struct scene_t *scene, struct state_t *state) {
   local->start_btn.rect = (SDL_FRect){
     .h = 40,
     .w = 70,
-    .x = 100,
-    .y = 100,
+    .x = (win_size.w/2.0) - 70.0,
+    .y = (win_size.h/2.0) + 30.0,
   };
   local->start_btn.theme = (struct theme_t){
     .color = {.r=0x06, .g=0x66, .b=0xaa, .a=0xff},
@@ -37,14 +54,17 @@ static bool load(struct scene_t *scene, struct state_t *state) {
   local->exit_btn.rect = (SDL_FRect){
     .h = 40,
     .w = 70,
-    .x = 100,
-    .y = 160,
+    .x = local->start_btn.rect.x,
+    .y = local->start_btn.rect.y + 60,
   };
   local->exit_btn.theme = (struct theme_t){
     .color = {.r=0x06, .g=0x66, .b=0xaa, .a=0xff},
   };
   if (!button_set_text(&local->exit_btn, exit_text, strlen(exit_text))) {
     fprintf(stderr, "could not add text to button %d\n", local->exit_btn.id);
+    return false;
+  }
+  if (!scene_add_child(scene, label_get_render(&local->title))) {
     return false;
   }
   if (!scene_add_child(scene, button_get_render(&local->start_btn))) {
@@ -57,6 +77,7 @@ static bool load(struct scene_t *scene, struct state_t *state) {
 }
 
 static bool unload(struct scene_t *scene, struct state_t *state) {
+  (void)state;
   struct scene_one_t *local = (struct scene_one_t*)scene->__internal;
   scene_one_free(local);
   free(local);
@@ -64,11 +85,14 @@ static bool unload(struct scene_t *scene, struct state_t *state) {
 }
 
 static bool update(struct scene_t *scene, struct state_t *state) {
-
+  SDL_Log("entering update function\n");
+  (void)scene;
+  (void)state;
   return true;
 }
 
 static bool event(struct scene_t *scene, struct state_t *state, SDL_Event *event) {
+  (void)state;
   struct scene_one_t *local = (struct scene_one_t*)scene->__internal;
   struct button_t buttons[2] = {local->start_btn, local->exit_btn};
   switch (event->button.type) {
@@ -101,6 +125,7 @@ struct scene_t* scene_one_prepare(struct scene_one_t *s) {
 }
 
 void scene_one_free(struct scene_one_t *s) {
+  label_free(&s->title);
   button_free(&s->start_btn);
   button_free(&s->exit_btn);
 }

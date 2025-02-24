@@ -2,10 +2,12 @@
 #define SCENE_ONE_START_H
 
 #include "src/types/components/button_types.h"
+#include "src/types/font_types.h"
 #include "src/types/scene_types.h"
 #include <stdbool.h>
 
 struct scene_one_t {
+  struct label_t title;
   struct button_t start_btn;
   struct button_t exit_btn;
 };

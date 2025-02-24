@@ -20,6 +20,7 @@ struct font_manager_t {
 struct label_t {
   struct font_t *font;
   TTF_Text *text;
+  SDL_Point center;
   // TODO maybe add size property
 };
 

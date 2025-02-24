@@ -1,4 +1,4 @@
-CFLAGS=-Wall -Wextra -std=c11
+CFLAGS=-Wall -ggdb -Wextra -std=c11
 LIBS=-L./deps/sdl/build -L./deps/sdl_ttf/build -L./deps/sdl_image/build -lSDL3 -lSDL3_ttf -lSDL3_image -lm -pthread
 WEB_LIBS=-L./deps/sdl/web -L./deps/sdl_ttf/web -L./deps/sdl_image/web -l:libSDL3.a -l:libSDL3_ttf.a -l:libSDL3_image.a
 WEB_DIR=./web

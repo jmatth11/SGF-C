@@ -1,8 +1,10 @@
 #include "font.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include "SDL3/SDL_log.h"
 #include "SDL3_ttf/SDL_ttf.h"
 
+#include "src/types/base.h"
 #include "src/types/font_types.h"
 
 bool font_init(struct font_t *f, SDL_Renderer *ren, const char *font_file, float ptsize) {
@@ -45,16 +47,66 @@ bool label_set_text(struct label_t *l, const char *text, size_t length) {
   if (l == NULL) return false;
   if (l->font == NULL) return false;
   if (text == NULL) return false;
-  if (l->text != NULL) {
-    TTF_DestroyText(l->text);
+  if (l->text == NULL) {
+    l->text = TTF_CreateText(l->font->engine, l->font->font, text, length);
+  } else {
+    if (!TTF_SetTextString(l->text, text, length)) {
+      SDL_LogError(1, "failed to set text on label: %s\n", SDL_GetError());
+      return false;
+    }
   }
-  l->text = TTF_CreateText(l->font->engine, l->font->font, text, length);
   return l->text != NULL;
 }
 
-bool label_render(struct label_t *l, float x, float y, SDL_Renderer *ren) {
+static bool label_render_fn(struct base_t *obj, SDL_Renderer *ren) {
+  struct label_t *local = (struct label_t*)obj->parent;
+  return label_render(local, ren);
+}
+
+struct render_t label_get_render(struct label_t *l) {
+  struct base_t base = {
+    // TODO add id to label
+    .id = 1,
+    .parent = l,
+  };
+  struct render_t result = {
+    .base = base,
+    .render = label_render_fn,
+  };
+  return result;
+}
+
+bool label_render(struct label_t *l, SDL_Renderer *ren) {
+  (void)ren;
   // TODO put condition where you can pass in a renderer to use a different one if desired.
+  int width = 0, height = 0;
+  if (!TTF_GetTextSize(l->text, &width, &height)) {
+    SDL_LogError(1, "getting label text size failed: %s\n", SDL_GetError());
+    return false;
+  }
+  int x = l->center.x - (width/2);
+  int y = l->center.y - (height/2);
   return TTF_DrawRendererText(l->text, x, y);
+}
+
+bool label_set_center_pos(struct label_t *l, int x, int y) {
+  l->center.x = x;
+  l->center.y = y;
+  return true;
+}
+
+SDL_Rect label_get_size(struct label_t *l) {
+  SDL_Rect result = {0};
+  int width = 0, height = 0;
+  if (!TTF_GetTextSize(l->text, &width, &height)) {
+    SDL_LogError(1, "getting label text size failed: %s\n", SDL_GetError());
+    return result;
+  }
+  result.x = l->center.x - (width/2);
+  result.y = l->center.y - (height/2);
+  result.w = width;
+  result.h = height;
+  return result;
 }
 
 void label_free(struct label_t *l) {

@@ -24,7 +24,8 @@ bool button_render(struct base_t *obj, SDL_Renderer *ren) {
     SDL_LogError(1, "could not render button %d\n", b->id);
     return false;
   }
-  return label_render(&b->label, b->rect.x + 10, b->rect.y + 10, NULL);
+  (void)label_set_center_pos(&b->label, b->rect.x + b->rect.w/2, b->rect.y + b->rect.h/2);
+  return label_render(&b->label, NULL);
 }
 
 bool button_set_text(struct button_t *button, const char *str, size_t len) {
