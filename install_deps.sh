@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt-get install -y wget meson pkg-config ragel gtk-doc-tools gcc g++ libfreetype6-dev libglib2.0-dev libcairo2-dev
+sudo apt-get install -y wget meson pkg-config ragel gtk-doc-tools gcc g++ libfreetype6-dev libglib2.0-dev libcairo2-dev nasm
 
 # install core dependencies.
 if [ ! -d ./deps/array_template ]; then
