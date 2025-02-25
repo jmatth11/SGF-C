@@ -1,10 +1,11 @@
 #ifndef SCENE_ONE_START_H
 #define SCENE_ONE_START_H
 
+#include <stdbool.h>
+
 #include "src/types/components/button_types.h"
 #include "src/types/font_types.h"
 #include "src/types/scene_types.h"
-#include <stdbool.h>
 
 struct scene_one_t {
   struct label_t title;

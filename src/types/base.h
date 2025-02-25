@@ -14,16 +14,20 @@ struct base_t {
   uint64_t id;
 };
 
-
 typedef bool(*render_fn)(struct base_t *obj, SDL_Renderer* ren);
 typedef SDL_Rect(*collision_rect_fn)(struct base_t *obj);
 typedef bool(*collision_fn)(struct base_t *obj, void* other);
 typedef bool(*mouse_event_fn)(struct base_t *obj, SDL_Event *event);
+typedef bool(*point_check_fn)(struct base_t *b, SDL_FPoint p);
+typedef bool(*rect_check_fn)(struct base_t *b, SDL_FRect r);
+
 
 // TODO maybe subscribe specifically for mouse events instead
 // of doing a check on every character
 struct events_t {
   struct base_t base;
+  point_check_fn pointInRect;
+  rect_check_fn rectInRect;
   mouse_event_fn mouse_event;
 };
 

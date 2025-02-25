@@ -2,9 +2,9 @@
 #define SGF_FONT_H
 
 #include <SDL3_ttf/SDL_ttf.h>
+#include "SDL3/SDL_rect.h"
 #include <stdbool.h>
 
-#include "SDL3/SDL_rect.h"
 #include "src/types/base.h"
 #include "src/types/theme_types.h"
 

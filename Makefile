@@ -1,5 +1,5 @@
-CFLAGS=-Wall -ggdb -Wextra -std=c11
-LIBS=-L./deps/sdl/build -L./deps/sdl_ttf/build -L./deps/sdl_image/build -lSDL3 -lSDL3_ttf -lSDL3_image -lm -pthread
+CFLAGS=-Wall -O2 -Wextra -std=c11
+LIBS=-L./deps/sdl/build -L./deps/sdl_ttf/build -L./deps/sdl_image/build -lSDL3 -lSDL3_ttf -lSDL3_image -lm
 WEB_LIBS=-L./deps/sdl/web -L./deps/sdl_ttf/web -L./deps/sdl_image/web -l:libSDL3.a -l:libSDL3_ttf.a -l:libSDL3_image.a
 WEB_DIR=./web
 OBJ=obj
@@ -56,7 +56,6 @@ clean:
 .PHONY: clean_deps
 clean_deps:
 	$(foreach dir, $(DEPS), $(shell cd $(dir) && $(MAKE) clean))
-	$(shell cd $(UTF_DEP) && $(MAKE) clean)
 
 .PHONY: clean_all
 clean_all: clean clean_deps

@@ -1,8 +1,8 @@
 #include "win.h"
 #include "SDL3/SDL_video.h"
-#include "src/types/win_types.h"
-
 #include <SDL3/SDL_log.h>
+
+#include "src/types/win_types.h"
 
 bool win_create_main(struct win_t *win, const char *title, int w, int h) {
   SDL_Window *local_win = NULL;

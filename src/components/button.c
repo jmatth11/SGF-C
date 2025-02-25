@@ -3,10 +3,11 @@
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3_ttf/SDL_ttf.h"
+#include <stdbool.h>
+
 #include "src/components/font.h"
 #include "src/types/base.h"
 #include "src/types/components/button_types.h"
-#include <stdbool.h>
 
 bool button_init(struct button_t *button, uint32_t id, struct font_t *font) {
   button->id = id;
