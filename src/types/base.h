@@ -21,7 +21,6 @@ typedef bool(*mouse_event_fn)(struct base_t *obj, SDL_Event *event);
 typedef bool(*point_check_fn)(struct base_t *b, SDL_FPoint p);
 typedef bool(*rect_check_fn)(struct base_t *b, SDL_FRect r);
 
-
 // TODO maybe subscribe specifically for mouse events instead
 // of doing a check on every character
 struct events_t {
