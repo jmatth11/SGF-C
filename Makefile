@@ -1,10 +1,10 @@
 CFLAGS=-Wall -O2 -Wextra -std=c11
-LIBS=-L./deps/sdl/build -L./deps/sdl_ttf/build -L./deps/sdl_image/build -lSDL3 -lSDL3_ttf -lSDL3_image -lm
+LIBS=-L./deps/sdl/build -L./deps/sdl_ttf/build -L./deps/sdl_image/build -L./deps/cstd/lib -lcustom_std -lSDL3 -lSDL3_ttf -lSDL3_image -lm
 WEB_LIBS=-L./deps/sdl/web -L./deps/sdl_ttf/web -L./deps/sdl_image/web -l:libSDL3.a -l:libSDL3_ttf.a -l:libSDL3_image.a
 WEB_DIR=./web
 OBJ=obj
 BIN=bin
-INCLUDES=-I. -I./deps/sdl/include -I./deps/sdl_ttf/include -I./deps/sdl_image/include
+INCLUDES=-I. -I./deps/sdl/include -I./deps/sdl_ttf/include -I./deps/sdl_image/include -I./deps/cstd/headers
 SOURCES=$(shell find . -name '*.c' -not -path './plugins/*' -not -path './deps/*' -not -path './libs/*')
 OBJECTS=$(addprefix $(OBJ)/,$(SOURCES:%.c=%.o))
 DEBUG_OBJECTS=$(patsubst %.c, $(OBJ)/%-debug.o, $(SOURCES))

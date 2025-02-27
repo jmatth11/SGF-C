@@ -6,6 +6,9 @@ sudo apt-get install -y wget meson pkg-config ragel gtk-doc-tools gcc g++ libfre
 if [ ! -d ./deps/array_template ]; then
   git clone https://github.com/jmatth11/array_template.git deps/array_template
 fi
+if [ ! -d ./deps/cstd ]; then
+  git clone https://github.com/jmatth11/cstd.git deps/cstd
+fi
 
 ./install_sdl3_deps.sh || exit 1
 
