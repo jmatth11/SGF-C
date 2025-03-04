@@ -1,4 +1,4 @@
-CFLAGS=-Wall -Wextra -std=c11
+CFLAGS=-Wall -O2 -Wextra -std=c11
 LIBS=-L./deps/sdl/build -L./deps/sdl_ttf/build -lSDL3 -lSDL3_ttf -lm -pthread -L./deps/cstd/libs -lcustom_std
 WEB_LIBS=-L./deps/sdl/web -L./deps/sdl_ttf/web -l:libSDL3.a -l:libSDL3_ttf.a -L./deps/cstd/libs -l:libcustom_std.a -L./deps/cstd/deps/utf8-zig/zig-out/lib/ -l:libutf8-zig.a
 WEB_DIR=./web
@@ -56,7 +56,6 @@ clean:
 .PHONY: clean_deps
 clean_deps:
 	$(foreach dir, $(DEPS), $(shell cd $(dir) && $(MAKE) clean))
-	$(shell cd $(UTF_DEP) && $(MAKE) clean)
 
 .PHONY: clean_all
 clean_all: clean clean_deps

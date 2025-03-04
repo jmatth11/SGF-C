@@ -1,6 +1,7 @@
 #include "scene.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "src/logic/base.h"
 #include "src/types/scene_types.h"
 
 struct scene_t* scene_create() {
@@ -31,6 +32,25 @@ bool scene_add_event_listener(struct scene_t* scene, struct events_t e) {
 }
 bool scene_add_collision_listener(struct scene_t* scene, struct collision_event_t c) {
   return insert_collision_array(&scene->collisions, c);
+}
+
+bool scene_check_events(struct scene_t* scene, SDL_Event *e) {
+  bool result = true;
+  size_t event_len = scene->events.len;
+  if (event_len > 0) {
+    for (size_t i = 0; i < event_len; ++i) {
+      struct events_t local_e = scene->events.events_data[i];
+      switch (e->type) {
+        case SDL_EVENT_MOUSE_MOTION: SDL_FALLTHROUGH;
+        case SDL_EVENT_MOUSE_BUTTON_UP: SDL_FALLTHROUGH;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+          result = base_handle_mouse_event(&local_e, e);
+          break;
+        }
+      }
+    }
+  }
+  return result;
 }
 
 void scene_destroy(struct scene_t **scene) {

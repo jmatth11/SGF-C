@@ -16,6 +16,7 @@ struct button_t {
   uint32_t id;
   struct theme_t theme;
   SDL_FRect rect;
+  SDL_Texture* texture;
   button_callback onClick;
   struct label_t label;
 };

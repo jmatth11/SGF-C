@@ -1,9 +1,10 @@
 #ifndef SGF_SCENE_TYPES_H
 #define SGF_SCENE_TYPES_H
 
-#include "SDL3/SDL_events.h"
-#include "src/types/base.h"
 #include <stdbool.h>
+#include "SDL3/SDL_events.h"
+
+#include "src/types/base.h"
 
 struct scene_t;
 struct state_t;

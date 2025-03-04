@@ -1,10 +1,13 @@
 #include "button.h"
+#include "SDL3/SDL_log.h"
+#include "SDL3/SDL_pixels.h"
+#include "SDL3/SDL_render.h"
 #include "SDL3_ttf/SDL_ttf.h"
+#include <stdbool.h>
+
 #include "src/components/font.h"
 #include "src/types/base.h"
 #include "src/types/components/button_types.h"
-#include <stdio.h>
-#include <stdbool.h>
 
 bool button_init(struct button_t *button, uint32_t id, struct font_t *font) {
   button->id = id;
@@ -19,15 +22,16 @@ bool button_render(struct base_t *obj, SDL_Renderer *ren) {
     return false;
   }
   if (!SDL_RenderFillRect(ren, &b->rect)) {
-    fprintf(stderr, "could not render button %d\n", b->id);
+    SDL_LogError(1, "could not render button %d\n", b->id);
     return false;
   }
-  return label_render(&b->label, b->rect.x + 10, b->rect.y + 10, NULL);
+  (void)label_set_center_pos(&b->label, b->rect.x + b->rect.w/2, b->rect.y + b->rect.h/2);
+  return label_render(&b->label, NULL);
 }
 
 bool button_set_text(struct button_t *button, const char *str, size_t len) {
   if (!button->label.font) {
-    fprintf(stderr, "button had no viable font.\n");
+    SDL_LogError(1, "button had no viable font.\n");
     return false;
   }
   return label_set_text(&button->label, str, len);
