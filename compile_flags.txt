@@ -1,11 +1,16 @@
 -I.
 -I./deps/sdl/include
 -I./deps/sdl_ttf/include
+-I./deps/cstd/headers/
+-I./deps/cstd/deps/utf8-zig/headers
 -Wall
 -Wextra
 -std=c11
 -L./deps/sdl/build
 -L./deps/sdl_ttf/build
+-L./deps/cstd/libs
+-lcustom_std
 -lSDL3
 -lSDL3_ttf
 -lm
+-pthread
