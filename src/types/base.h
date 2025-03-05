@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "deps/array_template/array_template.h"
+#include "array_template.h"
 
 struct base_t {
   void *parent;

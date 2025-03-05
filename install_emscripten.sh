@@ -10,7 +10,7 @@ if [ ! -d ./deps/emsdk ]; then
   cd -
   ./build_emscripten.sh sdl
   ./build_emscripten.sh sdl_ttf -DSDL3_DIR=../sdl/web -DSDLTTF_VENDORED=ON
-  ./build_emscripten.sh sdl_image -DSDL3_DIR=../sdl/web -DSDLIMAGE_VENDORED=ON
+  ./build_emscripten.sh sdl_image -DSDL3_DIR=../sdl/web -DSDLIMAGE_VENDORED=ON -DSDLIMAGE_AVIF=OFF -DDAV1D_ASM=OFF
 else
   cd ./deps/emsdk
   source ./emsdk_env.sh

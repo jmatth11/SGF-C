@@ -9,15 +9,15 @@ struct scene_t* scene_create() {
     sizeof(struct scene_t)
   );
   local->__internal = NULL;
-  if (!init_render_array(&local->children, 5)) {
+  if (!render_array_init(&local->children, 5)) {
     fprintf(stderr, "failed to initialize scene render array.\n");
     return NULL;
   }
-  if (!init_events_array(&local->events, 1)) {
+  if (!events_array_init(&local->events, 1)) {
     fprintf(stderr, "failed to initialize scene render array.\n");
     return NULL;
   }
-  if (!init_collision_array(&local->collisions, 1)) {
+  if (!collision_array_init(&local->collisions, 1)) {
     fprintf(stderr, "failed to initialize scene render array.\n");
     return NULL;
   }
@@ -25,13 +25,13 @@ struct scene_t* scene_create() {
 }
 
 bool scene_add_child(struct scene_t* scene, struct render_t ren) {
-  return insert_render_array(&scene->children, ren);
+  return render_array_insert(&scene->children, ren);
 }
 bool scene_add_event_listener(struct scene_t* scene, struct events_t e) {
-  return insert_events_array(&scene->events, e);
+  return events_array_insert(&scene->events, e);
 }
 bool scene_add_collision_listener(struct scene_t* scene, struct collision_event_t c) {
-  return insert_collision_array(&scene->collisions, c);
+  return collision_array_insert(&scene->collisions, c);
 }
 
 bool scene_check_events(struct scene_t* scene, SDL_Event *e) {
@@ -55,9 +55,9 @@ bool scene_check_events(struct scene_t* scene, SDL_Event *e) {
 
 void scene_destroy(struct scene_t **scene) {
   struct scene_t *local = *scene;
-  free_render_array(&local->children);
-  free_events_array(&local->events);
-  free_collision_array(&local->collisions);
+  render_array_free(&local->children);
+  events_array_free(&local->events);
+  collision_array_free(&local->collisions);
   local->__internal = NULL;
   free(local);
   (*scene) = NULL;

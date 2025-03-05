@@ -3,7 +3,7 @@
 
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "deps/array_template/array_template.h"
+#include "array_template.h"
 
 struct font_t {
   TTF_Font *font;
