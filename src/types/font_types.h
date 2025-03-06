@@ -4,6 +4,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "array_template.h"
+#include "unicode_str.h"
 
 struct font_t {
   TTF_Font *font;
@@ -21,6 +22,7 @@ struct font_manager_t {
 struct label_t {
   struct font_t *font;
   TTF_Text *text;
+  struct unicode_str_t *str;
   SDL_Point center;
   // TODO maybe add size property
 };

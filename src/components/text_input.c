@@ -1,13 +1,18 @@
 #include "text_input.h"
 #include "SDL3_ttf/SDL_ttf.h"
+#include "gap_buffer.h"
 #include "src/types/font_types.h"
 #include "src/types/components/text_input.h"
+#include "unicode_str.h"
 
 bool text_input_init(struct text_input_t *ti, struct font_t *font, SDL_FRect rect) {
   ti->font = font;
   ti->text = TTF_CreateText(font->engine, font->font, "", 0);
   if (!TTF_SetTextColor(ti->text, 0x00, 0x00, 0x00, 0xff)) return false;
   if (ti->text == NULL) {
+    return false;
+  }
+  if (!gap_buffer_init(&ti->str, 5)) {
     return false;
   }
   ti->rect = rect;
@@ -56,5 +61,6 @@ void text_input_free(struct text_input_t *ti) {
     TTF_DestroyText(ti->text);
     ti->text = NULL;
   }
+  gap_buffer_free(&ti->str);
   ti->font = NULL;
 }
