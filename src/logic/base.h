@@ -6,6 +6,7 @@
 
 struct events_t;
 
-bool base_handle_mouse_event(struct events_t *e_handler, SDL_Event *e);
+bool base_handle_mouse_event(struct events_t *e_handler, SDL_Event *e, struct events_t **focused);
+bool base_handle_keyboard_event(struct events_t *e_handler, SDL_Event *e);
 
 #endif

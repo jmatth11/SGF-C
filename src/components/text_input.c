@@ -1,4 +1,5 @@
 #include "text_input.h"
+#include "SDL3/SDL_rect.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "gap_buffer.h"
 #include "src/types/font_types.h"
@@ -6,7 +7,10 @@
 #include "unicode_str.h"
 
 bool text_input_init(struct text_input_t *ti, struct font_t *font, SDL_FRect rect) {
+  if (ti == NULL) return false;
+  if (font == NULL) return false;
   ti->font = font;
+  ti->cursor_pos = 0;
   ti->text = TTF_CreateText(font->engine, font->font, "", 0);
   if (!TTF_SetTextColor(ti->text, 0x00, 0x00, 0x00, 0xff)) return false;
   if (ti->text == NULL) {
@@ -19,9 +23,22 @@ bool text_input_init(struct text_input_t *ti, struct font_t *font, SDL_FRect rec
   return true;
 }
 
+bool text_input_point_in_rect(struct base_t *obj, SDL_FPoint p) {
+  if (obj == NULL) return false;
+  struct text_input_t *ti = (struct text_input_t*)obj->parent;
+  return SDL_PointInRectFloat(&p, &ti->rect);
+}
+
+bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
+  // TODO finish pulling input from e->text.text;
+  // also handle backspace and maybe handle enter key
+  return true;
+}
+
 static bool text_input_render(struct base_t *obj, SDL_Renderer *ren) {
   struct text_input_t *ti = (struct text_input_t*)obj->parent;
 
+  // TODO replace with theme values
   if (!SDL_SetRenderDrawColor(ren, 0xff, 0xff, 0xff, 0xff)) return false;
   if (!SDL_RenderFillRect(ren, &ti->rect)) return false;
   if (!SDL_SetRenderDrawColor(ren, 0x00, 0x00, 0x00, 0xff)) return false;

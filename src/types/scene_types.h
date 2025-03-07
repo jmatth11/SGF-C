@@ -19,6 +19,7 @@ struct scene_t {
   render_array children;
   events_array events;
   collision_array collisions;
+  struct events_t *focused_el;
 
   load_fn load;
   update_fn update;
