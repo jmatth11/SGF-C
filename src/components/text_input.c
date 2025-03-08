@@ -61,14 +61,15 @@ bool text_input_point_in_rect(struct base_t *obj, SDL_FPoint p) {
   return SDL_PointInRectFloat(&p, &ti->rect);
 }
 
+// TODO maybe have a way to handle setting focus here
 static bool mouse_event(struct base_t *obj, SDL_Event *e) {
   if (e->type != SDL_EVENT_MOUSE_BUTTON_DOWN)
     return true;
   if (obj == NULL)
     return false;
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
+  // TODO maybe need to redo this logic not sure if it entirely works
   SDL_FPoint mouse_pos = {.x = e->button.x, .y = e->button.y};
-  // TODO get mouse position and move text input cursor
   TTF_SubString sub_string;
   if (!TTF_GetTextSubStringForPoint(ti->text, mouse_pos.x, mouse_pos.y,
                                     &sub_string))
@@ -92,7 +93,6 @@ static bool mouse_event(struct base_t *obj, SDL_Event *e) {
 }
 
 bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
-  // TODO handle backspace and maybe handle enter key
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
   bool modified = false;
   switch (e->type) {
@@ -127,14 +127,17 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
     code_point_t *points = gap_buffer_get_str(&ti->str);
     char *new_string = code_point_to_u8(points, text_len);
     free(points);
-    // TODO look into if this frees previous text or if I need to free it
+    // set string copies the given string
     TTF_SetTextString(ti->text, new_string, strlen(new_string));
+    free(new_string);
   }
   return true;
 }
 
 static bool text_input_render(struct base_t *obj, SDL_Renderer *ren) {
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
+
+  // TODO figure out how to get "focus" flag here so I can render a cursor
 
   // TODO replace with theme values
   if (!SDL_SetRenderDrawColor(ren, 0xff, 0xff, 0xff, 0xff))
@@ -161,7 +164,6 @@ static bool text_input_render(struct base_t *obj, SDL_Renderer *ren) {
   if (offset != 0) {
   }
   TTF_DrawRendererText(ti->text, ti->rect.x + 5, ti->rect.y + 2);
-
   return true;
 }
 
