@@ -9,9 +9,7 @@
 
 #include "src/scenes/main_menu/start.h"
 #include "src/types/scene_types.h"
-#include "src/components/button.h"
 #include "src/logic/state.h"
-#include "src/types/components/button_types.h"
 #include "src/types/state.h"
 #include "src/components/win.h"
 #include "src/types/win_types.h"

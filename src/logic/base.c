@@ -4,14 +4,11 @@
 
 bool base_handle_mouse_event(struct events_t *e_handler, SDL_Event *e,
                              struct events_t **focused) {
-  if (!e_handler->mouse_event) {
-    return true;
-  }
   SDL_FPoint mouse_pos = {.x = e->button.x, .y = e->button.y};
-  if (e_handler->pointInRect &&
+  if (e_handler->pointInRect != NULL &&
       e_handler->pointInRect(&e_handler->base, mouse_pos)) {
     *focused = e_handler;
-    if (!e_handler->mouse_event(&e_handler->base, e)) {
+    if (e_handler->mouse_event != NULL && !e_handler->mouse_event(&e_handler->base, e)) {
       SDL_LogWarn(1, "mouse event failed for object(ID:%lu)\n",
                   e_handler->base.id);
       return false;
@@ -21,10 +18,7 @@ bool base_handle_mouse_event(struct events_t *e_handler, SDL_Event *e,
 }
 
 bool base_handle_keyboard_event(struct events_t *e_handler, SDL_Event *e) {
-  if (!e_handler->text_event) {
-    return true;
-  }
-  if (!e_handler->text_event(&e_handler->base, e)) {
+  if (e_handler->text_event != NULL && !e_handler->text_event(&e_handler->base, e)) {
     SDL_LogWarn(1, "text event failed for object(ID:%lu)\n",
                 e_handler->base.id);
     return false;

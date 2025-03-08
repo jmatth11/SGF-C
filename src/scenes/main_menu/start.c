@@ -1,11 +1,12 @@
 #include "start.h"
 
 #include <stdbool.h>
-#include <stdio.h>
 #include "SDL3/SDL_events.h"
+#include "SDL3/SDL_keyboard.h"
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_rect.h"
 
+#include "src/components/text_input.h"
 #include "src/components/win.h"
 #include "src/components/button.h"
 #include "src/logic/scene.h"
@@ -131,6 +132,19 @@ static bool load(struct scene_t *scene, struct state_t *state) {
   if (!scene_add_child(scene, label_get_render(&local->title))) {
     return false;
   }
+  if (!text_input_init(&local->text_input, &state->font, (SDL_FRect){.x=((double)win_size.w/2), .y=40, .w=120,.h=50})) {
+    SDL_LogError(1, "Text input failed to initialize.\n");
+    return false;
+  }
+  if (!scene_add_child(scene, text_input_get_render(&local->text_input))) {
+    SDL_LogError(1, "text input could not be added to scene.\n");
+    return false;
+  }
+  if (!scene_add_event_listener(scene, text_input_get_event(&local->text_input))) {
+    SDL_LogError(1, "text input event could not be added to scene.\n");
+    return false;
+  }
+  SDL_StartTextInput(state->win.win);
   if (!setup_buttons(scene, state)) {
     return false;
   }

@@ -12,6 +12,7 @@ bool text_input_init(struct text_input_t *ti, struct font_t *font, SDL_FRect rec
 bool text_input_point_in_rect(struct base_t *obj, SDL_FPoint p);
 bool text_input_text_event(struct base_t *obj, SDL_Event *e);
 struct render_t text_input_get_render(struct text_input_t *ti);
+struct events_t text_input_get_event(struct text_input_t *ti);
 void text_input_free(struct text_input_t *ti);
 
 #endif
