@@ -5,6 +5,16 @@
 #include "src/types/font_types.h"
 #include "src/types/components/text_input.h"
 #include "unicode_str.h"
+#include "utf8.h"
+#include <stdint.h>
+
+static uint8_t * char_arr_to_u8(const char *str, size_t len) {
+  uint8_t *arr = malloc(sizeof(uint8_t)*len);
+  for (size_t i = 0; i < len; ++i) {
+    arr[i] = (uint8_t)str[i];
+  }
+  return arr;
+}
 
 bool text_input_init(struct text_input_t *ti, struct font_t *font, SDL_FRect rect) {
   if (ti == NULL) return false;
@@ -29,9 +39,29 @@ bool text_input_point_in_rect(struct base_t *obj, SDL_FPoint p) {
   return SDL_PointInRectFloat(&p, &ti->rect);
 }
 
+static bool mouse_event(struct base_t *obj, SDL_Event *e) {
+  if (obj == NULL) return false;
+  struct text_input_t *ti = (struct text_input_t*)obj->parent;
+  SDL_FPoint mouse_pos = {.x = e->button.x, .y = e->button.y};
+  // TODO get mouse position and move text input cursor
+  TTF_SubString sub_string;
+  if (!TTF_GetTextSubStringForPoint(ti->text, mouse_pos.x, mouse_pos.y, &sub_string)) return false;
+  const size_t offset = sub_string.offset;
+  return true;
+}
+
 bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
-  // TODO finish pulling input from e->text.text;
-  // also handle backspace and maybe handle enter key
+  // TODO handle backspace and maybe handle enter key
+  struct text_input_t *ti = (struct text_input_t*)obj->parent;
+  const size_t n = strlen(e->text.text);
+  uint8_t *text = char_arr_to_u8(e->text.text, n);
+  for (size_t i = 0; i < n;) {
+    struct code_point point = utf8_next(text, n, i);
+    i += octet_type_count(point.type);
+    if (!gap_buffer_insert(&ti->str, point.val)) {
+      return false;
+    }
+  }
   return true;
 }
 
