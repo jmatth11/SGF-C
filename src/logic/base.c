@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "base.h"
 #include "src/types/base.h"
 #include <SDL3/SDL_log.h>

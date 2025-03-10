@@ -1,6 +1,10 @@
+#include <stdio.h>
+#include "SDL3/SDL_events.h"
+#include "SDL3/SDL_keyboard.h"
 #include "text_input.h"
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_rect.h"
+#include "SDL3/SDL_render.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "gap_buffer.h"
 #include "src/types/components/text_input.h"
@@ -41,6 +45,7 @@ bool text_input_init(struct text_input_t *ti, struct font_t *font,
     return false;
   ti->font = font;
   ti->cursor_pos = 0;
+  ti->focused = false;
   ti->text = TTF_CreateText(font->engine, font->font, "", 0);
   if (!TTF_SetTextColor(ti->text, 0x00, 0x00, 0x00, 0xff))
     return false;
@@ -61,7 +66,6 @@ bool text_input_point_in_rect(struct base_t *obj, SDL_FPoint p) {
   return SDL_PointInRectFloat(&p, &ti->rect);
 }
 
-// TODO maybe have a way to handle setting focus here
 static bool mouse_event(struct base_t *obj, SDL_Event *e) {
   if (e->type != SDL_EVENT_MOUSE_BUTTON_DOWN)
     return true;
@@ -69,24 +73,26 @@ static bool mouse_event(struct base_t *obj, SDL_Event *e) {
     return false;
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
   // TODO maybe need to redo this logic not sure if it entirely works
-  SDL_FPoint mouse_pos = {.x = e->button.x, .y = e->button.y};
-  TTF_SubString sub_string;
-  if (!TTF_GetTextSubStringForPoint(ti->text, mouse_pos.x, mouse_pos.y,
-                                    &sub_string))
-    return false;
-  const size_t offset = sub_string.offset;
-  TTF_SubString info;
-  if (!TTF_GetTextSubString(ti->text, 0, &info))
-    return false;
-  size_t point_idx =
-      codepoint_idx_from_byte_idx_char(ti->text->text, info.length, offset);
+  // SDL_FPoint mouse_pos = {.x = e->button.x, .y = e->button.y};
+  // TTF_SubString sub_string;
+  // if (!TTF_GetTextSubStringForPoint(ti->text, mouse_pos.x, mouse_pos.y,
+  //                                  &sub_string))
+  //  return false;
+  // const size_t offset = sub_string.offset;
+  // TTF_SubString info;
+  // if (!TTF_GetTextSubString(ti->text, 0, &info))
+  //  return false;
+  // size_t point_idx =
+  //    codepoint_idx_from_byte_idx_char(ti->text->text, info.length, offset);
   const size_t gap_len = gap_buffer_get_len(&ti->str);
-  if (point_idx >= gap_len) {
-    SDL_LogWarn(1,
-                "computed codepoint idx was out of range: idx:%lu, len:%lu\n",
-                point_idx, gap_len);
-    point_idx = 0;
-  }
+  size_t point_idx = gap_len;
+  // if (point_idx >= gap_len) {
+  //   SDL_LogWarn(1,
+  //               "computed codepoint idx was out of range: idx:%lu,
+  //               len:%lu\n", point_idx, gap_len);
+  //   // default to end of string
+  //   point_idx = gap_len;
+  // }
   ti->cursor_pos = point_idx;
   gap_buffer_move_cursor(&ti->str, ti->cursor_pos);
   return true;
@@ -103,6 +109,8 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
     for (size_t i = 0; i < n;) {
       struct code_point point = utf8_next(text, n, i);
       i += octet_type_count(point.type);
+      fprintf(stdout, "i=%lu; point=%u\n", i, point.val);
+      fflush(stdout);
       if (!gap_buffer_insert(&ti->str, point.val)) {
         free(text);
         return false;
@@ -126,6 +134,7 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
     const size_t text_len = gap_buffer_get_len(&ti->str);
     code_point_t *points = gap_buffer_get_str(&ti->str);
     char *new_string = code_point_to_u8(points, text_len);
+    fprintf(stdout, "new_string = \"%s\"\n", new_string);
     free(points);
     // set string copies the given string
     TTF_SetTextString(ti->text, new_string, strlen(new_string));
@@ -134,10 +143,27 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
   return true;
 }
 
+bool text_input_focus_event(struct base_t *obj, SDL_Event *e) {
+  struct text_input_t *ti = (struct text_input_t *)obj->parent;
+  SDL_Window *win = SDL_GetWindowFromEvent(e);
+  if (win != NULL) {
+    SDL_StartTextInput(win);
+  }
+  ti->focused = true;
+  return true;
+}
+bool text_input_unfocus_event(struct base_t *obj, SDL_Event *e) {
+  struct text_input_t *ti = (struct text_input_t *)obj->parent;
+  SDL_Window *win = SDL_GetWindowFromEvent(e);
+  if (win != NULL) {
+    SDL_StopTextInput(win);
+  }
+  ti->focused = false;
+  return true;
+}
+
 static bool text_input_render(struct base_t *obj, SDL_Renderer *ren) {
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
-
-  // TODO figure out how to get "focus" flag here so I can render a cursor
 
   // TODO replace with theme values
   if (!SDL_SetRenderDrawColor(ren, 0xff, 0xff, 0xff, 0xff))
@@ -164,6 +190,17 @@ static bool text_input_render(struct base_t *obj, SDL_Renderer *ren) {
   if (offset != 0) {
   }
   TTF_DrawRendererText(ti->text, ti->rect.x + 5, ti->rect.y + 2);
+  if (ti->focused) {
+    SDL_SetRenderDrawColor(ren, 0xff, 0x00, 0x00, 0xff);
+    // TODO implement cursor
+    SDL_FRect cursor_rect = {
+        .x = ti->rect.x + w,
+        .y = ti->rect.y + 5,
+        .w = 5,
+        .h = h,
+    };
+    SDL_RenderFillRect(ren, &cursor_rect);
+  }
   return true;
 }
 
@@ -174,9 +211,12 @@ struct events_t text_input_get_event(struct text_input_t *ti) {
   };
   struct events_t result = {
       .base = b,
+      .focus_event = text_input_focus_event,
+      .unfocus_event = text_input_unfocus_event,
       .pointInRect = text_input_point_in_rect,
       .mouse_event = mouse_event,
       .text_event = text_input_text_event,
+      .rectInRect = NULL,
   };
   return result;
 }

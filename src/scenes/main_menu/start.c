@@ -1,4 +1,5 @@
 #include "start.h"
+#include <stdio.h>
 
 #include <stdbool.h>
 #include "SDL3/SDL_events.h"
@@ -101,6 +102,10 @@ static bool setup_buttons(struct scene_t *scene, struct state_t *state) {
     },
     .mouse_event = button_handler,
     .pointInRect = button_point_fn,
+    .rectInRect = NULL,
+    .text_event = NULL,
+    .focus_event = NULL,
+    .unfocus_event = NULL,
   };
   if (!scene_add_event_listener(scene, button_event)) {
     SDL_LogError(1, "adding event listener failed\n");
@@ -125,6 +130,7 @@ static bool load(struct scene_t *scene, struct state_t *state) {
     SDL_LogError(1, "could not set text for title.\n");
     return false;
   }
+  local->text_input.id = 12;
   SDL_Rect win_size = win_get_size(&state->win);
   SDL_Rect title_size = label_get_size(&local->title);
   // ignoring return
@@ -144,7 +150,6 @@ static bool load(struct scene_t *scene, struct state_t *state) {
     SDL_LogError(1, "text input event could not be added to scene.\n");
     return false;
   }
-  SDL_StartTextInput(state->win.win);
   if (!setup_buttons(scene, state)) {
     return false;
   }

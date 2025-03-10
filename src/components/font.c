@@ -17,14 +17,14 @@ bool font_init(struct font_t *f, SDL_Renderer *ren, const char *font_file,
   f->engine = NULL;
   f->font = TTF_OpenFont(font_file, ptsize);
   if (f->font == NULL) {
-    fprintf(stderr, "font was not loaded properly %s\n", SDL_GetError());
+    SDL_LogError(1, "font was not loaded properly %s\n", SDL_GetError());
     return false;
   }
   // TODO maybe replace and pass in text engine from manager when we switch to
   // that
   f->engine = TTF_CreateRendererTextEngine(ren);
   if (f->engine == NULL) {
-    fprintf(stderr, "font was not loaded properly %s\n", SDL_GetError());
+    SDL_LogError(1, "font was not loaded properly %s\n", SDL_GetError());
     return false;
   }
   return f->font != NULL;

@@ -21,6 +21,8 @@ typedef bool (*mouse_event_fn)(struct base_t *obj, SDL_Event *event);
 typedef bool (*point_check_fn)(struct base_t *b, SDL_FPoint p);
 typedef bool (*rect_check_fn)(struct base_t *b, SDL_FRect r);
 typedef bool (*text_event_fn)(struct base_t *b, SDL_Event *event);
+typedef bool (*focus_event_fn)(struct base_t *b, SDL_Event *e);
+typedef bool (*unfocus_event_fn)(struct base_t *b, SDL_Event *e);
 
 // TODO maybe subscribe specifically for mouse events instead
 // of doing a check on every character
@@ -30,6 +32,8 @@ struct events_t {
   rect_check_fn rectInRect;
   mouse_event_fn mouse_event;
   text_event_fn text_event;
+  focus_event_fn focus_event;
+  unfocus_event_fn unfocus_event;
 };
 
 struct collision_event_t {

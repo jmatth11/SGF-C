@@ -4,6 +4,7 @@
 #include "SDL3/SDL_rect.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "gap_buffer.h"
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -18,6 +19,7 @@ struct text_input_t {
   SDL_FRect rect;
   struct gap_buffer_t str;
   size_t cursor_pos;
+  bool focused;
 };
 
 #endif
