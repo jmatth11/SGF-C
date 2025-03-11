@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdio.h>
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_keyboard.h"
@@ -122,9 +123,12 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
   case SDL_EVENT_KEY_DOWN: {
     if (e->key.key == SDLK_BACKSPACE) {
       modified = true;
-      if (!gap_buffer_delete(&ti->str)) {
-        SDL_LogWarn(1, "could not perform backspace action.\n");
-        return false;
+      const size_t gap_len = gap_buffer_get_len(&ti->str);
+      if (gap_len > 0) {
+        if (!gap_buffer_delete(&ti->str)) {
+          SDL_LogWarn(1, "could not perform backspace action.\n");
+          return false;
+        }
       }
     }
     break;
