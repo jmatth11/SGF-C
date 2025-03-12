@@ -1,8 +1,6 @@
-#include <stddef.h>
-#include <stdio.h>
+#include "text_input.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_keyboard.h"
-#include "text_input.h"
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
@@ -12,7 +10,9 @@
 #include "src/types/font_types.h"
 #include "unicode_str.h"
 #include "utf8.h"
+#include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 static uint8_t *char_arr_to_u8(const char *str, size_t len) {
   uint8_t *arr = malloc(sizeof(uint8_t) * len);
@@ -102,6 +102,7 @@ static bool mouse_event(struct base_t *obj, SDL_Event *e) {
 bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
   bool modified = false;
+  fprintf(stdout, "event type = %d\n", e->type);
   switch (e->type) {
   case SDL_EVENT_TEXT_INPUT: {
     modified = true;
@@ -137,6 +138,8 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
   if (modified) {
     const size_t text_len = gap_buffer_get_len(&ti->str);
     code_point_t *points = gap_buffer_get_str(&ti->str);
+    if (points == NULL)
+      return false;
     char *new_string = code_point_to_u8(points, text_len);
     fprintf(stdout, "new_string = \"%s\"\n", new_string);
     free(points);
