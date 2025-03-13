@@ -73,6 +73,10 @@ static bool mouse_event(struct base_t *obj, SDL_Event *e) {
   if (obj == NULL)
     return false;
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
+  // currently if we are focused don't do anything.
+  if (ti->focused){
+    return true;
+  }
   // TODO maybe need to redo this logic not sure if it entirely works
   // SDL_FPoint mouse_pos = {.x = e->button.x, .y = e->button.y};
   // TTF_SubString sub_string;
@@ -102,7 +106,6 @@ static bool mouse_event(struct base_t *obj, SDL_Event *e) {
 bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
   bool modified = false;
-  fprintf(stdout, "event type = %d\n", e->type);
   switch (e->type) {
   case SDL_EVENT_TEXT_INPUT: {
     modified = true;
@@ -111,12 +114,11 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
     for (size_t i = 0; i < n;) {
       struct code_point point = utf8_next(text, n, i);
       i += octet_type_count(point.type);
-      fprintf(stdout, "i=%lu; point=%u\n", i, point.val);
-      fflush(stdout);
       if (!gap_buffer_insert(&ti->str, point.val)) {
         free(text);
         return false;
       }
+      ++ti->cursor_pos;
     }
     free(text);
     break;
@@ -128,6 +130,26 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
       if (gap_len > 0) {
         if (!gap_buffer_delete(&ti->str)) {
           SDL_LogWarn(1, "could not perform backspace action.\n");
+          return false;
+        }
+        --ti->cursor_pos;
+      }
+    }
+    if (e->key.key == SDLK_LEFT) {
+      if (ti->cursor_pos > 0) {
+        ti->cursor_pos = ti->cursor_pos - 1;
+        if (!gap_buffer_move_cursor(&ti->str, ti->cursor_pos)) {
+          SDL_LogWarn(1, "could not perform move left action.\n");
+          return false;
+        }
+      }
+    }
+    if (e->key.key == SDLK_RIGHT) {
+      const size_t gap_len = gap_buffer_get_len(&ti->str);
+      if (ti->cursor_pos < gap_len) {
+        ti->cursor_pos = ti->cursor_pos + 1;
+        if (!gap_buffer_move_cursor(&ti->str, ti->cursor_pos)) {
+          SDL_LogWarn(1, "could not perform move left action.\n");
           return false;
         }
       }
@@ -143,7 +165,6 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
       TTF_SetTextString(ti->text, "", 0);
     } else {
       char *new_string = code_point_to_u8(points, text_len);
-      fprintf(stdout, "new_string = \"%s\"\n", new_string);
       free(points);
       // set string copies the given string
       TTF_SetTextString(ti->text, new_string, strlen(new_string));
@@ -203,10 +224,11 @@ static bool text_input_render(struct base_t *obj, SDL_Renderer *ren) {
   if (ti->focused) {
     SDL_SetRenderDrawColor(ren, 0xff, 0x00, 0x00, 0xff);
     // TODO implement cursor
+    // TODO draw cursor at cursor position
     SDL_FRect cursor_rect = {
-        .x = ti->rect.x + w,
+        .x = ti->rect.x + w + 2,
         .y = ti->rect.y + 5,
-        .w = 5,
+        .w = 2,
         .h = h,
     };
     SDL_RenderFillRect(ren, &cursor_rect);
