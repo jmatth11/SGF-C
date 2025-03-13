@@ -138,14 +138,17 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
   if (modified) {
     const size_t text_len = gap_buffer_get_len(&ti->str);
     code_point_t *points = gap_buffer_get_str(&ti->str);
-    if (points == NULL)
-      return false;
-    char *new_string = code_point_to_u8(points, text_len);
-    fprintf(stdout, "new_string = \"%s\"\n", new_string);
-    free(points);
-    // set string copies the given string
-    TTF_SetTextString(ti->text, new_string, strlen(new_string));
-    free(new_string);
+    // if points is NULL the gap buffer is probably empty
+    if (points == NULL) {
+      TTF_SetTextString(ti->text, "", 0);
+    } else {
+      char *new_string = code_point_to_u8(points, text_len);
+      fprintf(stdout, "new_string = \"%s\"\n", new_string);
+      free(points);
+      // set string copies the given string
+      TTF_SetTextString(ti->text, new_string, strlen(new_string));
+      free(new_string);
+    }
   }
   return true;
 }

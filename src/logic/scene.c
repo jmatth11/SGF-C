@@ -72,7 +72,7 @@ bool scene_check_events(struct scene_t *scene, SDL_Event *e) {
       case SDL_EVENT_TEXT_EDITING:
         SDL_FALLTHROUGH;
       case SDL_EVENT_TEXT_INPUT: {
-        if (scene->focused_el != NULL) {
+        if (scene->focused_el != NULL && scene->focused_el == local_e) {
           result = base_handle_keyboard_event(scene->focused_el, e);
         }
         break;
