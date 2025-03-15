@@ -142,7 +142,7 @@ static bool load(struct scene_t *scene, struct state_t *state) {
                        (SDL_FRect){
                            .x = ((double)win_size.w / 2) - 60,
                            .y = title_size.h + 60,
-                           .w = 120,
+                           .w = -1, // default to 120
                            .h = -1, // default to font size
                        })) {
     SDL_LogError(1, "Text input failed to initialize.\n");

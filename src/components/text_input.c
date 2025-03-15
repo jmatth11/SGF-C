@@ -51,12 +51,12 @@ static SDL_FRect text_input_get_rect_or_default(struct text_input_t *ti) {
   if (ti->rect.h < 0) {
     if (text_h <= 0)
       text_h = 40;
-    text_box_rect.h = text_h + TEXT_X_BUFFER;
+    text_box_rect.h = text_h + (TEXT_Y_BUFFER*2);
   }
   if (ti->rect.w < 0) {
-    if (text_w <= 0)
+    if (text_w < 120)
       text_w = 120;
-    text_box_rect.w = text_w + TEXT_Y_BUFFER + 120;
+    text_box_rect.w = text_w + (TEXT_X_BUFFER*2);
   }
   return text_box_rect;
 }
