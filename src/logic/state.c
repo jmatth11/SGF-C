@@ -15,7 +15,7 @@ bool state_init(struct state_t* s) {
     .b = 0x0,
     .a = 0xff
   };
-  if (!win_create_main(&s->win, "SGF Example", 480, 640)) {
+  if (!win_create_main(&s->win, "SGF Example", 640, 480)) {
     SDL_LogError(1, "failed to create main window.\n");
     return false;
   }
