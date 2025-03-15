@@ -21,7 +21,7 @@ bool state_init(struct state_t* s) {
   }
   // TODO pull this out to parse from an actual config file
   s->config.font_file = "resources/fonts/SourceCodePro-Regular.ttf";
-  s->config.font_size = 14;
+  s->config.font_size = 18;
   if (!font_init(&s->font, s->win.ren, s->config.font_file, s->config.font_size)) {
     SDL_LogError(1, "failed to create font.\n");
     return false;

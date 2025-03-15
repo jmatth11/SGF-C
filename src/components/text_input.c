@@ -14,6 +14,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#define TEXT_X_BUFFER 5
+#define TEXT_Y_BUFFER 2
+
 static uint8_t *char_arr_to_u8(const char *str, size_t len) {
   uint8_t *arr = malloc(sizeof(uint8_t) * len);
   for (size_t i = 0; i < len; ++i) {
@@ -38,6 +41,32 @@ static char *code_point_to_u8(const code_point_t *str, size_t len) {
   return result;
 }
 
+static SDL_FRect text_input_get_rect_or_default(struct text_input_t *ti) {
+  SDL_FRect text_box_rect = ti->rect;
+  int text_w = 0, text_h = 0;
+  if (!TTF_GetTextSize(ti->text, &text_w, &text_h))
+    return text_box_rect;
+
+  if (ti->rect.h < 0) {
+    if (text_h <= 0)
+      text_h = 40;
+    text_box_rect.h = text_h + TEXT_X_BUFFER;
+  }
+  if (ti->rect.w < 0) {
+    if (text_w <= 0)
+      text_w = 120;
+    text_box_rect.w = text_w + TEXT_Y_BUFFER + 120;
+  }
+  return text_box_rect;
+}
+
+static float text_input_get_font_height(struct text_input_t *ti) {
+  int text_w = 0, text_h = 0;
+  if (!TTF_GetStringSize(ti->font->font, "W", 1, &text_w, &text_h))
+    return 0;
+  return text_h;
+}
+
 bool text_input_init(struct text_input_t *ti, struct font_t *font,
                      SDL_FRect rect) {
   if (ti == NULL)
@@ -57,6 +86,13 @@ bool text_input_init(struct text_input_t *ti, struct font_t *font,
     return false;
   }
   ti->rect = rect;
+  if (rect.h <= 0) {
+    int text_w = 0, text_h = 0;
+    if (!TTF_GetStringSize(ti->font->font, "W", 1, &text_w, &text_h)) {
+      return false;
+    }
+    ti->rect.h = text_h + TEXT_Y_BUFFER;
+  }
   return true;
 }
 
@@ -64,7 +100,8 @@ bool text_input_point_in_rect(struct base_t *obj, SDL_FPoint p) {
   if (obj == NULL)
     return false;
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
-  return SDL_PointInRectFloat(&p, &ti->rect);
+  SDL_FRect rect = text_input_get_rect_or_default(ti);
+  return SDL_PointInRectFloat(&p, &rect);
 }
 
 static bool mouse_event(struct base_t *obj, SDL_Event *e) {
@@ -74,7 +111,7 @@ static bool mouse_event(struct base_t *obj, SDL_Event *e) {
     return false;
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
   // currently if we are focused don't do anything.
-  if (ti->focused){
+  if (ti->focused) {
     return true;
   }
   // TODO maybe need to redo this logic not sure if it entirely works
@@ -195,41 +232,55 @@ bool text_input_unfocus_event(struct base_t *obj, SDL_Event *e) {
 
 static bool text_input_render(struct base_t *obj, SDL_Renderer *ren) {
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
+  int text_w = 0, text_h = 0;
+  if (!TTF_GetTextSize(ti->text, &text_w, &text_h))
+    return false;
+
+  SDL_FRect text_box_rect = text_input_get_rect_or_default(ti);
 
   // TODO replace with theme values
   if (!SDL_SetRenderDrawColor(ren, 0xff, 0xff, 0xff, 0xff))
     return false;
-  if (!SDL_RenderFillRect(ren, &ti->rect))
+  if (!SDL_RenderFillRect(ren, &text_box_rect))
     return false;
   if (!SDL_SetRenderDrawColor(ren, 0x00, 0x00, 0x00, 0xff))
     return false;
-  if (!SDL_RenderRect(ren, &ti->rect))
+  if (!SDL_RenderRect(ren, &text_box_rect))
     return false;
 
-  int w = 0, h = 0;
-  if (!TTF_GetTextSize(ti->text, &w, &h))
-    return false;
   int offset = 0;
   // TODO maybe need to store string in text input and use the TTF_Text
   // as the display text only.
-  if (w > ti->rect.w) {
+  if (text_w > text_box_rect.w) {
     TTF_SubString sub_string;
-    if (!TTF_GetTextSubStringForPoint(ti->text, h / 2, w - 8, &sub_string))
+    if (!TTF_GetTextSubStringForPoint(ti->text, text_h / 2, text_w - 8,
+                                      &sub_string))
       return false;
     offset = sub_string.offset;
   }
   if (offset != 0) {
   }
-  TTF_DrawRendererText(ti->text, ti->rect.x + 5, ti->rect.y + 2);
+  TTF_DrawRendererText(ti->text, text_box_rect.x + TEXT_X_BUFFER,
+                       text_box_rect.y + TEXT_Y_BUFFER);
   if (ti->focused) {
+    const size_t byte_offset = gap_buffer_byte_length(&ti->str, ti->cursor_pos);
+    // TODO make cursor object
     SDL_SetRenderDrawColor(ren, 0xff, 0x00, 0x00, 0xff);
-    // TODO implement cursor
-    // TODO draw cursor at cursor position
+    int cursor_w = 0, cursor_h = 0;
+    if (byte_offset > 0 &&
+        !TTF_GetStringSize(ti->font->font, ti->text->text, byte_offset,
+                           &cursor_w, &cursor_h)) {
+      SDL_LogWarn(1, "could not get string size for text input.\n");
+      return true;
+    }
+    if (text_h <= 0) {
+      text_h = text_input_get_font_height(ti);
+    }
     SDL_FRect cursor_rect = {
-        .x = ti->rect.x + w + 2,
-        .y = ti->rect.y + 5,
-        .w = 2,
-        .h = h,
+        .x = text_box_rect.x + cursor_w + ((float)TEXT_X_BUFFER / 2),
+        .y = text_box_rect.y + TEXT_Y_BUFFER,
+        .w = 1.5,
+        .h = text_h - (TEXT_Y_BUFFER * 2),
     };
     SDL_RenderFillRect(ren, &cursor_rect);
   }
