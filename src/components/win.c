@@ -10,7 +10,11 @@ bool win_create_main(struct win_t *win, const char *title, int w, int h) {
   if (!SDL_CreateWindowAndRenderer(
           title, w, h, SDL_WINDOW_BORDERLESS | SDL_WINDOW_HIGH_PIXEL_DENSITY,
           &local_win, &local_ren)) {
-    SDL_Log("error: couldn't create window/renderer -- %s", SDL_GetError());
+    SDL_LogError(1, "error: couldn't create window/renderer -- %s", SDL_GetError());
+    return false;
+  }
+  if (!SDL_SetWindowPosition(local_win, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED)) {
+    SDL_LogError(1, "error: couldn't center window -- %s", SDL_GetError());
     return false;
   }
   if (local_ren == NULL || local_win == NULL) {
