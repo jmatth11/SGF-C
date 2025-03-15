@@ -1,6 +1,7 @@
 #include "text_input.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_keyboard.h"
+#include "SDL3/SDL_keycode.h"
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
@@ -110,33 +111,34 @@ static bool mouse_event(struct base_t *obj, SDL_Event *e) {
   if (obj == NULL)
     return false;
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
-  // currently if we are focused don't do anything.
-  if (ti->focused) {
+  const size_t gap_len = gap_buffer_get_len(&ti->str);
+  // if not focused default to end of string.
+  if (ti->focused == false) {
+    ti->cursor_pos = gap_len;
+    gap_buffer_move_cursor(&ti->str, ti->cursor_pos);
     return true;
   }
-  // TODO maybe need to redo this logic not sure if it entirely works
-  // SDL_FPoint mouse_pos = {.x = e->button.x, .y = e->button.y};
-  // TTF_SubString sub_string;
-  // if (!TTF_GetTextSubStringForPoint(ti->text, mouse_pos.x, mouse_pos.y,
-  //                                  &sub_string))
-  //  return false;
-  // const size_t offset = sub_string.offset;
-  // TTF_SubString info;
-  // if (!TTF_GetTextSubString(ti->text, 0, &info))
-  //  return false;
-  // size_t point_idx =
-  //    codepoint_idx_from_byte_idx_char(ti->text->text, info.length, offset);
-  const size_t gap_len = gap_buffer_get_len(&ti->str);
-  size_t point_idx = gap_len;
-  // if (point_idx >= gap_len) {
-  //   SDL_LogWarn(1,
-  //               "computed codepoint idx was out of range: idx:%lu,
-  //               len:%lu\n", point_idx, gap_len);
-  //   // default to end of string
-  //   point_idx = gap_len;
-  // }
+  // otherwise figure out where mouse clicked
+  // get the relative position
+  SDL_FPoint relative_mouse_pos = {.x = e->button.x - ti->rect.x,
+                                   .y = e->button.y - ti->rect.y};
+  TTF_SubString sub_string;
+  if (!TTF_GetTextSubStringForPoint(ti->text, relative_mouse_pos.x,
+                                    relative_mouse_pos.y, &sub_string)) {
+    return false;
+  }
+  const size_t offset = sub_string.offset;
+  // grab the byte offset since our gap_buffer is in codepoints
+  size_t point_idx = codepoint_idx_from_byte_idx_char(
+      ti->text->text, strlen(ti->text->text), offset);
+  if (point_idx >= gap_len) {
+    SDL_LogWarn(1,
+                "computed codepoint idx was out of range: idx:%lu, len:%lu\n",
+                point_idx, gap_len);
+    // default to end of string
+    point_idx = gap_len;
+  }
   ti->cursor_pos = point_idx;
-  gap_buffer_move_cursor(&ti->str, ti->cursor_pos);
   return true;
 }
 
@@ -186,9 +188,25 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
       if (ti->cursor_pos < gap_len) {
         ti->cursor_pos = ti->cursor_pos + 1;
         if (!gap_buffer_move_cursor(&ti->str, ti->cursor_pos)) {
-          SDL_LogWarn(1, "could not perform move left action.\n");
+          SDL_LogWarn(1, "could not perform move right action.\n");
           return false;
         }
+      }
+    }
+    if (e->key.key == SDLK_DELETE) {
+      modified = true;
+      const size_t gap_len = gap_buffer_get_len(&ti->str);
+      if (ti->cursor_pos < gap_len) {
+        ti->cursor_pos = ti->cursor_pos + 1;
+        if (!gap_buffer_move_cursor(&ti->str, ti->cursor_pos)) {
+          SDL_LogWarn(1, "could not perform move delete move action.\n");
+          return false;
+        }
+        if (!gap_buffer_delete(&ti->str)) {
+          SDL_LogWarn(1, "could not perform delete action.\n");
+          return false;
+        }
+        ti->cursor_pos = ti->cursor_pos - 1;
       }
     }
     break;
