@@ -13,10 +13,12 @@ bool win_create_main(struct win_t *win, const char *title, int w, int h) {
     SDL_LogError(1, "error: couldn't create window/renderer -- %s", SDL_GetError());
     return false;
   }
+#ifndef __EMSCRIPTEN__
   if (!SDL_SetWindowPosition(local_win, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED)) {
     SDL_LogError(1, "error: couldn't center window -- %s", SDL_GetError());
     return false;
   }
+#endif
   if (local_ren == NULL || local_win == NULL) {
     SDL_LogCritical(1, "window or renderer could not be initialised: %s\n", SDL_GetError());
     return false;

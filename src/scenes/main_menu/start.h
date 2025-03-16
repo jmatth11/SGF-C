@@ -13,6 +13,7 @@ struct scene_one_t {
   struct button_t start_btn;
   struct button_t exit_btn;
   struct text_input_t text_input;
+  bool exit_clicked;
 };
 
 bool scene_one_init(struct scene_one_t *s);
