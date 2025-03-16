@@ -166,7 +166,7 @@ bool text_input_text_event(struct base_t *obj, SDL_Event *e) {
     if (e->key.key == SDLK_BACKSPACE) {
       modified = true;
       const size_t gap_len = gap_buffer_get_len(&ti->str);
-      if (gap_len > 0) {
+      if (gap_len > 0 && ti->cursor_pos != 0) {
         if (!gap_buffer_delete(&ti->str)) {
           SDL_LogWarn(1, "could not perform backspace action.\n");
           return false;
