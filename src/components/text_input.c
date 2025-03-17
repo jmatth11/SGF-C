@@ -139,6 +139,7 @@ static bool mouse_event(struct base_t *obj, SDL_Event *e) {
     point_idx = gap_len;
   }
   ti->cursor_pos = point_idx;
+  gap_buffer_move_cursor(&ti->str, ti->cursor_pos);
   return true;
 }
 
