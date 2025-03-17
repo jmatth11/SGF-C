@@ -12,6 +12,7 @@ struct font_t;
 bool button_init(struct button_t *button, uint32_t id, struct font_t *font);
 struct render_t button_get_render(struct button_t *button);
 bool button_set_text(struct button_t *button, const char *str, size_t len);
+bool button_set_center_pos(struct button_t *button, float x, float y);
 void button_free(struct button_t *button);
 
 #endif

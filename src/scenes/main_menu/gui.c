@@ -53,8 +53,8 @@ static bool setup_buttons(struct scene_t *scene, struct state_t *state) {
   }
   SDL_Rect win_size = win_get_size(&state->win);
   local->start_btn.rect = (SDL_FRect){
-      .h = 40,
-      .w = 70,
+      .h = -1,
+      .w = -1,
       .x = (win_size.w / 2.0) - (70.0 / 2.0),
       .y = (win_size.h / 2.0) + (30.0 / 2.0),
   };
@@ -66,8 +66,8 @@ static bool setup_buttons(struct scene_t *scene, struct state_t *state) {
     return false;
   }
   local->exit_btn.rect = (SDL_FRect){
-      .h = 40,
-      .w = 70,
+      .h = -1,
+      .w = -1,
       .x = local->start_btn.rect.x,
       .y = local->start_btn.rect.y + 60,
   };
