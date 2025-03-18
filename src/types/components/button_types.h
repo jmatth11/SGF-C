@@ -19,6 +19,7 @@ struct button_t {
   SDL_Texture* texture;
   button_callback onClick;
   struct label_t label;
+  bool center;
 };
 
 #endif

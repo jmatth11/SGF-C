@@ -40,7 +40,8 @@ static bool button_handler(struct base_t *obj, SDL_Event *e) {
 
 static bool button_point_fn(struct base_t *b, SDL_FPoint p) {
   struct button_t *button = (struct button_t *)b->parent;
-  return SDL_PointInRectFloat(&p, &button->rect);
+  SDL_FRect rect = button_get_rect(button);
+  return SDL_PointInRectFloat(&p, &rect);
 }
 
 static bool setup_buttons(struct scene_t *scene, struct state_t *state) {
@@ -55,7 +56,7 @@ static bool setup_buttons(struct scene_t *scene, struct state_t *state) {
   local->start_btn.rect = (SDL_FRect){
       .h = -1,
       .w = -1,
-      .x = (win_size.w / 2.0) - (70.0 / 2.0),
+      .x = (win_size.w / 2.0),
       .y = (win_size.h / 2.0) + (30.0 / 2.0),
   };
   local->start_btn.theme = (struct theme_t){
@@ -74,6 +75,8 @@ static bool setup_buttons(struct scene_t *scene, struct state_t *state) {
   local->exit_btn.theme = (struct theme_t){
       .color = {.r = 0x06, .g = 0x66, .b = 0xaa, .a = 0xff},
   };
+  local->start_btn.center = true;
+  local->exit_btn.center = true;
   if (!button_set_text(&local->exit_btn, EXIT_TEXT, strlen(EXIT_TEXT))) {
     SDL_LogError(1, "could not add text to button %d\n", local->exit_btn.id);
     return false;
