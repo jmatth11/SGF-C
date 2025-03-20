@@ -8,6 +8,7 @@
 
 bool state_init(struct state_t* s) {
   s->app_state = SDL_APP_CONTINUE;
+  s->next_scene = NULL;
   s->current_scene = NULL;
   s->win.background = (SDL_Color){
     .r = 0x0,
@@ -30,14 +31,7 @@ bool state_init(struct state_t* s) {
 }
 
 bool state_switch_scene(struct state_t *s, struct scene_t *scene) {
-  if (s->current_scene != NULL) {
-    s->current_scene->unload(s->current_scene, s);
-    scene_destroy(&s->current_scene);
-  }
-  s->current_scene = scene;
-  if (s->current_scene != NULL) {
-    s->current_scene->load(s->current_scene, s);
-  }
+  s->next_scene = scene;
   return true;
 }
 

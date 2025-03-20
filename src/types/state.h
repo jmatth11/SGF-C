@@ -10,6 +10,7 @@
 struct state_t {
   enum SDL_AppResult app_state;
   struct scene_t *current_scene;
+  struct scene_t *next_scene;
   struct win_t win;
   // TODO replace with font_manager_t
   struct font_t font;

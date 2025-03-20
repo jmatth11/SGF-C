@@ -50,7 +50,6 @@ static bool event(struct scene_t *scene, struct state_t *state,
   (void)event;
   struct scene_one_t *local = (struct scene_one_t *)scene->__internal;
   if (local->exit_clicked) {
-    SDL_Log("exit clicked\n");
     state->app_state = SDL_APP_SUCCESS;
   }
   return true;

@@ -14,6 +14,22 @@
 #include "src/components/win.h"
 #include "src/types/win_types.h"
 
+static bool switch_scene(struct state_t *s) {
+  if (s->next_scene == NULL) {
+    return true;
+  }
+  if (s->current_scene != NULL) {
+    s->current_scene->unload(s->current_scene, s);
+    scene_destroy(&s->current_scene);
+  }
+  s->current_scene = s->next_scene;
+  if (s->current_scene != NULL) {
+    s->current_scene->load(s->current_scene, s);
+  }
+  s->next_scene = NULL;
+  return true;
+}
+
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   SDL_LogTrace(2, "app initialization.\n");
   SDL_SetAppMetadata("Simple App", "1.0", "com.example.jmatth11");
@@ -39,7 +55,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   SDL_LogTrace(2, "prepare scene.\n");
   struct scene_t *one = scene_one_prepare(scene_one);
   SDL_LogTrace(2, "switch to scene scene.\n");
-  if (!state_switch_scene(s, one)) {
+  state_switch_scene(s, one);
+  if (!switch_scene(s)) {
     return SDL_APP_FAILURE;
   }
   return s->app_state;
@@ -60,6 +77,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
   }
   if (!s->current_scene->event(s->current_scene, s, event)) {
     SDL_LogError(1, "scene event failed.\n");
+    return SDL_APP_FAILURE;
+  }
+  if (!switch_scene(s)) {
     return SDL_APP_FAILURE;
   }
   return s->app_state;
@@ -89,8 +109,10 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     struct render_t tmp = objs.render_data[i];
     tmp.render(&tmp.base, s->win.ren);
   }
-
   SDL_RenderPresent(s->win.ren);
+  if (!switch_scene(s)) {
+    return SDL_APP_FAILURE;
+  }
   return s->app_state;
 }
 
