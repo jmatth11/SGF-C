@@ -12,7 +12,7 @@ struct scene_one_t {
   struct label_t title;
   struct button_t start_btn;
   struct button_t exit_btn;
-  struct text_input_t text_input;
+  struct text_input_t host_url;
   bool exit_clicked;
 };
 
