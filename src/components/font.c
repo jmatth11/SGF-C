@@ -132,13 +132,15 @@ SDL_Rect label_get_size(struct label_t *l) {
 }
 
 void label_free(struct label_t *l) {
-  if (l == NULL)
+  if (l == NULL) {
     return;
+  }
   l->font = NULL;
-  if (l->text == NULL)
+  if (l->text == NULL) {
     return;
+  }
   TTF_DestroyText(l->text);
   l->text = NULL;
-  unicode_str_destroy(l->str);
+  unicode_str_destroy(&l->str);
   l->str = NULL;
 }

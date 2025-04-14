@@ -35,6 +35,7 @@ bool scene_add_collision_listener(struct scene_t *scene,
   return collision_array_insert(&scene->collisions, c);
 }
 
+#ifdef DEBUG
 static void debug_event(struct events_t *obj) {
   fprintf(stdout, "base ID = %lu\n", obj->base.id);
   fprintf(stdout, "focus_event is null %s\n", obj->focus_event == NULL ? "true" : "false");
@@ -45,6 +46,7 @@ static void debug_event(struct events_t *obj) {
   fprintf(stdout, "text_event is null %s\n", obj->text_event == NULL ? "true" : "false");
   fflush(stdout);
 }
+#endif
 
 bool scene_check_events(struct scene_t *scene, SDL_Event *e) {
   bool result = true;
