@@ -5,10 +5,10 @@ WEB_DIR=./web
 OBJ=obj
 BIN=bin
 INCLUDES=-I. -I./deps/sdl/include -I./deps/sdl_ttf/include -I./deps/cstd/headers/ -I./deps/cstd/deps/utf8-zig/headers
-SOURCES=$(shell find . -name '*.c' -not -path './plugins/*' -not -path './deps/*' -not -path './libs/*')
+SOURCES=$(shell find ./src -name '*.c' -not -path './plugins/*' -not -path './deps/*' -not -path './libs/*')
 OBJECTS=$(addprefix $(OBJ)/,$(SOURCES:%.c=%.o))
 DEBUG_OBJECTS=$(patsubst %.c, $(OBJ)/%-debug.o, $(SOURCES))
-DEPS=$(shell find . -maxdepth 3 -name Makefile -printf '%h\n' | grep -v 'unittest' | grep -v '^.$$')
+DEPS=$(shell find ./deps -maxdepth 2 -name Makefile -printf '%h\n' | grep -v 'unittest' | grep -v '^.$$')
 RESOURCE_DIR=./resources
 ifeq ($(ARCH), web)
 $(info emscripten)
@@ -21,7 +21,7 @@ TARGET=main
 endif
 
 .PHONY: all
-all: deps src
+all: src
 
 .PHONY: web
 web:
@@ -53,22 +53,23 @@ clean:
 	@rm -rf $(OBJ)/* 2> /dev/null
 	@rm -f $(BIN)/* 2> /dev/null
 
-.PHONY: clean_deps
-clean_deps:
-	$(foreach dir, $(DEPS), $(shell cd $(dir) && $(MAKE) clean))
+#.PHONY: clean_deps
+#clean_deps:
+#	$(foreach dir, $(DEPS), $(shell cd $(dir) && $(MAKE) clean))
 
 .PHONY: clean_all
 clean_all: clean clean_deps
 
-.PHONY: deps
-deps:
-	@for i in $(DEPS); do\
-		cd $${i} && $(MAKE) && cd -;\
-	done
-
-.PHONY: deps_debug
-deps_debug:
-	@for i in $(DEPS); do\
-		cd $${i} && ($(MAKE) debug || $(MAKE)) && cd -;\
-	done
+# doesn't work with more than 1 depth dependencies
+#.PHONY: deps
+#deps:
+#	@for i in $(DEPS); do\
+#		$(MAKE) -C $${i} MAKEFLAGS= ; \
+#	done
+#
+#.PHONY: deps_debug
+#deps_debug:
+#	@for i in $(DEPS); do\
+#		cd $${i} && ($(MAKE) debug || $(MAKE)) && cd -;\
+#	done
 
