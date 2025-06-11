@@ -5,6 +5,7 @@
 #include "src/components/text_input.h"
 #include "src/components/win.h"
 #include "src/logic/scene.h"
+#include "src/scenes/main_menu/logic.h"
 #include "start.h"
 
 #define CONNECT_TEXT "CONNECT"
@@ -15,19 +16,22 @@ static struct scene_one_t *delegate = NULL;
 
 static bool button_handler(struct base_t *obj, SDL_Event *e) {
   (void)e;
+  if (delegate == NULL) return false;
   switch (obj->id) {
   case 1: {
     if (e->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-      SDL_Log("clicked start\n");
+        if (validate_user_data(&delegate->user_data)) {
+          SDL_Log("user data is valid!\n");
+        } else {
+          SDL_Log("user data is invalid!\n");
+        }
     }
     break;
   }
   case 2: {
     if (e->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
       SDL_Log("clicked exit\n");
-      if (delegate != NULL) {
-        delegate->exit_clicked = true;
-      }
+      delegate->exit_clicked = true;
     }
     break;
   }

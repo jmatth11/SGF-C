@@ -7,12 +7,14 @@
 #include "src/types/components/text_input.h"
 #include "src/types/font_types.h"
 #include "src/types/scene_types.h"
+#include "src/types/user_data.h"
 
 struct scene_one_t {
   struct label_t title;
   struct button_t start_btn;
   struct button_t exit_btn;
   struct text_input_t host_url;
+  struct user_data user_data;
   bool exit_clicked;
 };
 

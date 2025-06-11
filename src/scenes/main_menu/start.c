@@ -18,7 +18,7 @@
 #define title_text "Jumper"
 
 bool scene_one_init(struct scene_one_t *s) {
-  (void)s;
+  s->user_data.data_url = NULL;
   return true;
 }
 
@@ -66,6 +66,7 @@ struct scene_t *scene_one_prepare(struct scene_one_t *s) {
 }
 
 void scene_one_free(struct scene_one_t *s) {
+  // TODO maybe free s->user_data.data_url
   label_free(&s->title);
   button_free(&s->start_btn);
   button_free(&s->exit_btn);

@@ -5,6 +5,7 @@
 #include "src/types/config_types.h"
 #include "src/types/font_types.h"
 #include "src/types/scene_types.h"
+#include "src/types/user_data.h"
 #include "src/types/win_types.h"
 
 struct state_t {
@@ -15,6 +16,7 @@ struct state_t {
   // TODO replace with font_manager_t
   struct font_t font;
   struct config_t config;
+  struct user_data user_data;
 };
 
 #endif

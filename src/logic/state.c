@@ -5,6 +5,7 @@
 #include "src/components/win.h"
 #include "src/types/scene_types.h"
 #include "src/types/state.h"
+#include "unicode_str.h"
 
 bool state_init(struct state_t* s) {
   s->app_state = SDL_APP_CONTINUE;
@@ -23,11 +24,11 @@ bool state_init(struct state_t* s) {
   // TODO pull this out to parse from an actual config file
   s->config.font_file = "resources/fonts/SourceCodePro-Regular.ttf";
   s->config.font_size = 18;
-  s->config.url = NULL;
   if (!font_init(&s->font, s->win.ren, s->config.font_file, s->config.font_size)) {
     SDL_LogError(1, "failed to create font.\n");
     return false;
   }
+  s->user_data.data_url = NULL;
   return true;
 }
 
@@ -37,6 +38,9 @@ bool state_switch_scene(struct state_t *s, struct scene_t *scene) {
 }
 
 void state_free(struct state_t* s) {
+  if (s->user_data.data_url != NULL) {
+    unicode_str_destroy(&s->user_data.data_url);
+  }
   state_switch_scene(s, NULL);
   font_free(&s->font);
   win_free(&s->win);
