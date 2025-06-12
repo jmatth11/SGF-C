@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "src/types/components/button_types.h"
+#include "src/types/components/loading_icon.h"
 #include "src/types/components/text_input.h"
 #include "src/types/font_types.h"
 #include "src/types/scene_types.h"
@@ -15,7 +16,10 @@ struct scene_one_t {
   struct button_t exit_btn;
   struct text_input_t host_url;
   struct user_data user_data;
+  struct loading_icon_t loading_icon;
   bool exit_clicked;
+  bool loading;
+  bool loading_shown;
 };
 
 bool scene_one_init(struct scene_one_t *s);

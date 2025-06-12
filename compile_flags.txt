@@ -1,6 +1,7 @@
 -I.
 -I./deps/sdl/include
 -I./deps/sdl_ttf/include
+-I./deps/sdl_image/include
 -I./deps/cstd/headers/
 -I./deps/cstd/deps/utf8-zig/headers
 -I./deps/websocket-c/headers
@@ -9,11 +10,13 @@
 -std=c11
 -L./deps/sdl/build
 -L./deps/sdl_ttf/build
+-L./deps/sdl_image/build
 -L./deps/cstd/libs
 -L./deps/websocket-c/zig-out/lib/
 -lcustom_std
 -lws
 -lSDL3
 -lSDL3_ttf
+-lSDL3_image
 -lm
 -pthread

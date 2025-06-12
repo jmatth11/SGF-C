@@ -2,6 +2,7 @@
 #include "SDL3/SDL_log.h"
 #include "src/components/button.h"
 #include "src/components/font.h"
+#include "src/components/loading_icon.h"
 #include "src/components/text_input.h"
 #include "src/components/win.h"
 #include "src/logic/scene.h"
@@ -15,13 +16,13 @@
 static struct scene_one_t *delegate = NULL;
 
 static bool button_handler(struct base_t *obj, SDL_Event *e) {
-  (void)e;
   if (delegate == NULL) return false;
+  if (delegate->loading) return true;
   switch (obj->id) {
   case 1: {
     if (e->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-        if (validate_user_data(&delegate->user_data)) {
-          SDL_Log("user data is valid!\n");
+        if (validate_user_data(&delegate->host_url, &delegate->user_data)) {
+          delegate->loading = true;
         } else {
           SDL_Log("user data is invalid!\n");
         }
@@ -112,6 +113,12 @@ static bool setup_buttons(struct scene_t *scene, struct state_t *state) {
   button_event.base.id = local->exit_btn.id;
   if (!scene_add_event_listener(scene, button_event)) {
     SDL_LogError(1, "adding event listener failed\n");
+    return false;
+  }
+  // TODO move to it's own function
+  if (!loading_icon_init(&local->loading_icon,
+                    state->win.ren, "./resources/icons/loading.png")) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "failed to load loading image");
     return false;
   }
   return true;

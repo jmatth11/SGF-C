@@ -12,9 +12,9 @@ bool state_init(struct state_t* s) {
   s->next_scene = NULL;
   s->current_scene = NULL;
   s->win.background = (SDL_Color){
-    .r = 0x0,
-    .g = 0x0,
-    .b = 0x0,
+    .r = 0xFF,
+    .g = 0xFF,
+    .b = 0xFF,
     .a = 0xff
   };
   if (!win_create_main(&s->win, "SGF Example", 640, 480)) {

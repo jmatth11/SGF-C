@@ -4,15 +4,40 @@
 #include "src/types/components/text_input.h"
 #include "unicode_str.h"
 #include "websocket.h"
+#include "magic.h"
 #include <stddef.h>
 
+static void free_codepoint_str(code_point_t **obj) {
+  if (obj == NULL) {
+    return;
+  }
+  if (*obj == NULL) {
+    return;
+  }
+  free(*obj);
+  *obj = NULL;
+}
+
 bool validate_user_data(struct text_input_t *field, struct user_data *data) {
+  // clear previous data
+  if (data->data_url != NULL) {
+    unicode_str_destroy(&data->data_url);
+    ws_client_free(&data->client);
+  }
   const size_t str_len = gap_buffer_get_len(&field->str);
-  const code_point_t *str = gap_buffer_get_str(&field->str);
+  code_point_t DEFER(free_codepoint_str) *str = gap_buffer_get_str(&field->str);
   struct unicode_str_t *u_str = unicode_str_create();
-  // TODO pull out and convert field's string
-  //unicode_str_set(u_str, const uint8_t *other, size_t len)
-  //unicode_str_to_cstr(struct unicode_str_t *str)
-  //ws_client_from_str(const char *url, size_t len, struct ws_client_t *client)
-  return false;
+  if (unicode_str_set_codepoint(u_str, str, str_len) != str_len) {
+    unicode_str_destroy(&u_str);
+    return false;
+  }
+  const size_t url_len = unicode_str_byte_len(u_str);
+  char AUTO_C *url = unicode_str_to_cstr(u_str);
+  bool valid = ws_client_from_str(url, url_len, &data->client);
+  if (!valid) {
+    unicode_str_destroy(&u_str);
+    return false;
+  }
+  data->data_url = u_str;
+  return true;
 }

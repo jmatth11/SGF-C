@@ -1,6 +1,8 @@
 #include "scene.h"
 #include "src/logic/base.h"
+#include "src/types/base.h"
 #include "src/types/scene_types.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL3/SDL_log.h>
@@ -26,6 +28,17 @@ struct scene_t *scene_create() {
 
 bool scene_add_child(struct scene_t *scene, struct render_t ren) {
   return render_array_insert(&scene->children, ren);
+}
+bool scene_remove_child(struct scene_t* scene, uint64_t id) {
+  for (size_t i = 0; i < scene->children.len; ++i) {
+    if (scene->children.render_data[i].base.id == id) {
+      if (!render_array_fast_remove(&scene->children, i)) {
+        return false;
+      }
+      break;
+    }
+  }
+  return true;
 }
 bool scene_add_event_listener(struct scene_t *scene, struct events_t e) {
   return events_array_insert(&scene->events, e);

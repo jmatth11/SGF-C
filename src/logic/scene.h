@@ -23,6 +23,12 @@ struct scene_t* scene_create();
  */
 bool scene_add_child(struct scene_t* scene, struct render_t ren);
 /**
+ * Remove child from scene.
+ *
+ * @return True for success, False otherwise.
+ */
+bool scene_remove_child(struct scene_t* scene, uint64_t id);
+/**
  * Add event listener to scene.
  * These are for SDL events.
  *
