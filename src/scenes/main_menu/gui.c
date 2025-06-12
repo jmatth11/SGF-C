@@ -16,16 +16,19 @@
 static struct scene_one_t *delegate = NULL;
 
 static bool button_handler(struct base_t *obj, SDL_Event *e) {
-  if (delegate == NULL) return false;
-  if (delegate->loading) return true;
+  if (delegate == NULL)
+    return false;
+  if (delegate->loading)
+    return true;
   switch (obj->id) {
   case 1: {
     if (e->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-        if (validate_user_data(&delegate->host_url, &delegate->user_data)) {
-          delegate->loading = true;
-        } else {
-          SDL_Log("user data is invalid!\n");
-        }
+      if (validate_user_data(&delegate->host_url, &delegate->user_data)) {
+        delegate->loading = true;
+        SDL_Log("validated\n");
+      } else {
+        SDL_Log("user data is invalid!\n");
+      }
     }
     break;
   }
@@ -47,6 +50,30 @@ static bool button_point_fn(struct base_t *b, SDL_FPoint p) {
   struct button_t *button = (struct button_t *)b->parent;
   SDL_FRect rect = button_get_rect(button);
   return SDL_PointInRectFloat(&p, &rect);
+}
+
+static bool setup_loading_icon(struct scene_t *scene, struct state_t *state) {
+  struct scene_one_t *local = (struct scene_one_t *)scene->__internal;
+  if (!loading_icon_init(&local->loading_icon, state->win.ren,
+                         "./resources/icons/loading.png")) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "failed to load loading image");
+    return false;
+  }
+  SDL_Rect win_size = win_get_size(&state->win);
+  local->loading_icon.rect = (SDL_FRect){
+      .x = win_size.w * 0.5,
+      .y = win_size.h * 0.5,
+      .w = 45,
+      .h = 45,
+  };
+  local->loading_icon.background = (SDL_FRect){
+      .x = 0,
+      .y = 0,
+      .w = win_size.w,
+      .h = win_size.h,
+  };
+  local->loading_icon.background_color = (SDL_Color){0xaa, 0xaa, 0xaa, 0x77};
+  return true;
 }
 
 static bool setup_buttons(struct scene_t *scene, struct state_t *state) {
@@ -115,12 +142,6 @@ static bool setup_buttons(struct scene_t *scene, struct state_t *state) {
     SDL_LogError(1, "adding event listener failed\n");
     return false;
   }
-  // TODO move to it's own function
-  if (!loading_icon_init(&local->loading_icon,
-                    state->win.ren, "./resources/icons/loading.png")) {
-    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "failed to load loading image");
-    return false;
-  }
   return true;
 }
 
@@ -183,6 +204,11 @@ bool setup_gui(struct scene_t *scene, struct state_t *state) {
   }
   if (!setup_buttons(scene, state)) {
     SDL_LogWarn(1, "failed button setup for main menu.\n");
+    return false;
+  }
+  if (!setup_loading_icon(scene, state)) {
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                "failed loading icon setup for main menu.\n");
     return false;
   }
   return true;

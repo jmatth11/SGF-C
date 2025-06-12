@@ -45,6 +45,7 @@ static bool update(struct scene_t *scene, struct state_t *state) {
   struct scene_one_t* local = (struct scene_one_t*)scene->__internal;
   if (local->loading) {
     if (!local->loading_shown) {
+      SDL_Log("adding loading icon to screen");
       local->loading_shown = true;
       if (!scene_add_child(scene, loading_icon_get_render(&local->loading_icon))) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "failed to add loading render_t");

@@ -3,6 +3,7 @@
 #include "scene.h"
 #include "src/components/font.h"
 #include "src/components/win.h"
+#include "src/types/color.h"
 #include "src/types/scene_types.h"
 #include "src/types/state.h"
 #include "unicode_str.h"
@@ -11,12 +12,7 @@ bool state_init(struct state_t* s) {
   s->app_state = SDL_APP_CONTINUE;
   s->next_scene = NULL;
   s->current_scene = NULL;
-  s->win.background = (SDL_Color){
-    .r = 0xFF,
-    .g = 0xFF,
-    .b = 0xFF,
-    .a = 0xff
-  };
+  s->win.background = COLOR_BLACK;
   if (!win_create_main(&s->win, "SGF Example", 640, 480)) {
     SDL_LogError(1, "failed to create main window.\n");
     return false;

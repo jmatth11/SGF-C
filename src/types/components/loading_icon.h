@@ -9,6 +9,8 @@ struct loading_icon_t {
   float rotation_speed;
   float angle;
   SDL_FRect rect;
+  SDL_FRect background;
+  SDL_Color background_color;
 };
 
 #endif
