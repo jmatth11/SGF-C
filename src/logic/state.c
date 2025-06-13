@@ -7,6 +7,7 @@
 #include "src/types/scene_types.h"
 #include "src/types/state.h"
 #include "unicode_str.h"
+#include "user_data.h"
 
 bool state_init(struct state_t* s) {
   s->app_state = SDL_APP_CONTINUE;
@@ -24,7 +25,7 @@ bool state_init(struct state_t* s) {
     SDL_LogError(1, "failed to create font.\n");
     return false;
   }
-  s->user_data.data_url = NULL;
+  s->user_data = NULL;
   return true;
 }
 
@@ -34,8 +35,8 @@ bool state_switch_scene(struct state_t *s, struct scene_t *scene) {
 }
 
 void state_free(struct state_t* s) {
-  if (s->user_data.data_url != NULL) {
-    unicode_str_destroy(&s->user_data.data_url);
+  if (s->user_data != NULL) {
+    user_data_destroy(&s->user_data);
   }
   state_switch_scene(s, NULL);
   font_free(&s->font);

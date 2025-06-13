@@ -16,7 +16,7 @@ struct state_t {
   // TODO replace with font_manager_t
   struct font_t font;
   struct config_t config;
-  struct user_data user_data;
+  struct user_data *user_data;
 };
 
 #endif

@@ -22,8 +22,12 @@ static bool button_handler(struct base_t *obj, SDL_Event *e) {
     return true;
   if (obj->id == delegate->start_btn.id) {
     if (e->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-      if (validate_user_data(&delegate->host_url, &delegate->user_data)) {
+      if (validate_user_data(&delegate->host_url, delegate->user_data)) {
         delegate->loading = true;
+        if (!start_web_thread(delegate->user_data)) {
+          SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "web thread failed to start\n");
+          return false;
+        }
       } else {
         // TODO display error message
         SDL_Log("user data is invalid!\n");

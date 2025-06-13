@@ -8,23 +8,32 @@ struct user_data;
 struct entry;
 struct entry_array;
 
-bool user_data_init(struct user_data *ud) __nonnull((1));
+struct user_data* user_data_create();
 /**
  * Set the status of the user data with an enum user_data_status_options value.
  *
  * @param ud The user data.
  * @param status The status. See enum user_data_status_options.
  */
-void user_data_set_status(struct user_data *ud, int status);
+void user_data_set_status(struct user_data *ud, int status) __nonnull((1));
 /**
  * Get the status of the user data.
  *
  * @param ud The user data.
  * @return The status. See enum user_data_status_options.
  */
-int user_data_get_status(struct user_data *ud);
-bool user_data_add_entry(struct user_data *ud, struct entry *entry);
-bool user_data_get_all_entries(struct user_data *ud, struct entry_array *out);
-void user_data_free(struct user_data *ud);
+int user_data_get_status(struct user_data *ud) __nonnull((1));
+
+
+bool user_data_add_entry(struct user_data *ud, struct entry *entry) __nonnull((1,2));
+
+bool user_data_get_all_entries(struct user_data *ud, struct entry_array *out) __nonnull((1,2));
+
+/**
+ * Spawn a separate thread to run the websocket handler to capture entries.
+ */
+bool user_data_spawn_handler(struct user_data *ud) __nonnull((1));
+
+void user_data_destroy(struct user_data **ud);
 
 #endif

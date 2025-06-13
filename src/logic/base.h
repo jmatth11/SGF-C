@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-typedef uint64_t base_id;
+typedef uint32_t base_id;
 
 base_id base_id_generate();
 

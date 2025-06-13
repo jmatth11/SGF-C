@@ -9,7 +9,7 @@ struct entry {
   // TODO implement
 };
 
-generate_array_template(entry, struct entry)
+generate_array_template(entry, struct entry*)
 
 struct entry_handler_t {
   SDL_Mutex *mutex;

@@ -9,7 +9,7 @@
 
 #include "array_template.h"
 
-typedef uint64_t base_id;
+typedef uint32_t base_id;
 
 struct base_t {
   void *parent;

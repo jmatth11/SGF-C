@@ -11,9 +11,12 @@
 #include "src/components/text_input.h"
 #include "src/components/win.h"
 #include "src/logic/scene.h"
+#include "src/logic/state.h"
+#include "src/logic/user_data.h"
+#include "src/scenes/levels/main_view.h"
 #include "src/scenes/main_menu/gui.h"
 #include "src/types/state.h"
-#include "websocket.h"
+#include "src/types/user_data.h"
 
 bool scene_one_init(struct scene_one_t *s) {
   (void)s;
@@ -22,8 +25,12 @@ bool scene_one_init(struct scene_one_t *s) {
 
 static bool load(struct scene_t *scene, struct state_t *state) {
   struct scene_one_t *local = (struct scene_one_t *)scene->__internal;
-  (void)ws_client_init(&local->user_data.client);
-  local->user_data.data_url = NULL;
+  local->user_data = user_data_create();
+  if (local->user_data == NULL) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "user data failed to initialize\n");
+    return false;
+  }
+  state->user_data = local->user_data;
   local->loading = false;
   local->loading_shown = false;
   local->exit_clicked = false;
@@ -44,6 +51,14 @@ static bool unload(struct scene_t *scene, struct state_t *state) {
 static bool update(struct scene_t *scene, struct state_t *state) {
   struct scene_one_t* local = (struct scene_one_t*)scene->__internal;
   if (local->loading) {
+    enum user_data_status_options status = user_data_get_status(local->user_data);
+    if (status == UDS_CONNECTED) {
+      struct main_view_t *next_scene = malloc(sizeof(struct main_view_t));
+      if (!state_switch_scene(state, main_view_prepare(next_scene))) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "error switching to main scene.\n");
+        return false;
+      }
+    }
     if (!local->loading_shown) {
       SDL_Log("adding loading icon to screen");
       local->loading_shown = true;

@@ -15,7 +15,7 @@ struct scene_one_t {
   struct button_t start_btn;
   struct button_t exit_btn;
   struct text_input_t host_url;
-  struct user_data user_data;
+  struct user_data *user_data;
   struct loading_icon_t loading_icon;
   bool exit_clicked;
   bool loading;
