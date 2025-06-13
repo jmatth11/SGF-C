@@ -16,10 +16,12 @@
 static struct scene_one_t *delegate = NULL;
 
 static bool button_handler(struct base_t *obj, SDL_Event *e) {
-  if (delegate == NULL)
+  if (delegate == NULL) {
     return false;
-  if (delegate->loading)
+  }
+  if (delegate->loading) {
     return true;
+  }
   if (obj->id == delegate->start_btn.id) {
     if (e->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
       if (validate_user_data(&delegate->host_url, delegate->user_data)) {

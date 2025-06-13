@@ -75,7 +75,7 @@ static int background_thread(void* data) {
 bool user_data_spawn_handler(struct user_data *ud) {
   user_data_set_status(ud, UDS_CONNECTING);
   ud->thread_parent = SDL_CreateThread(background_thread, "websocket", ud);
-  if (ud->thread_parent != NULL) {
+  if (ud->thread_parent == NULL) {
     user_data_set_status(ud, UDS_ERROR);
     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "could not create websocket thread\n");
     return false;
