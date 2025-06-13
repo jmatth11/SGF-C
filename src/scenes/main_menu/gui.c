@@ -20,8 +20,7 @@ static bool button_handler(struct base_t *obj, SDL_Event *e) {
     return false;
   if (delegate->loading)
     return true;
-  switch (obj->id) {
-  case 1: {
+  if (obj->id == delegate->start_btn.id) {
     if (e->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
       if (validate_user_data(&delegate->host_url, &delegate->user_data)) {
         delegate->loading = true;
@@ -30,18 +29,11 @@ static bool button_handler(struct base_t *obj, SDL_Event *e) {
         SDL_Log("user data is invalid!\n");
       }
     }
-    break;
-  }
-  case 2: {
+  } else if (obj->id == delegate->exit_btn.id) {
     if (e->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
       SDL_Log("clicked exit\n");
       delegate->exit_clicked = true;
     }
-    break;
-  }
-  default: {
-    break;
-  }
   }
   return true;
 }
@@ -62,8 +54,8 @@ static bool setup_loading_icon(struct scene_t *scene, struct state_t *state) {
   SDL_Rect win_size = win_get_size(&state->win);
   const float icon_size = 45;
   local->loading_icon.rect = (SDL_FRect){
-      .x = (win_size.w * 0.5) - (icon_size/2),
-      .y = (win_size.h * 0.5) - (icon_size/2),
+      .x = (win_size.w * 0.5) - (icon_size / 2),
+      .y = (win_size.h * 0.5) - (icon_size / 2),
       .w = icon_size,
       .h = icon_size,
   };
