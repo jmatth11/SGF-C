@@ -1,7 +1,13 @@
-#include <stdio.h>
+#include <stdatomic.h>
 #include "base.h"
 #include "src/types/base.h"
 #include <SDL3/SDL_log.h>
+
+static atomic_ulong global_id = 0;
+
+base_id base_id_generate() {
+  return atomic_fetch_add(&global_id, 1);
+}
 
 bool base_handle_mouse_event(struct events_t *e_handler, SDL_Event *e,
                              struct events_t **focused) {

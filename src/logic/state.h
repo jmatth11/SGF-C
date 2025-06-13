@@ -4,6 +4,7 @@
 #include "src/types/render_interface.h"
 #include <stdbool.h>
 
+
 struct state_t;
 struct scene_t;
 

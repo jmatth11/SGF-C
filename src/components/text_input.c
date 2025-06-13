@@ -7,6 +7,7 @@
 #include "SDL3/SDL_render.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "gap_buffer.h"
+#include "src/logic/base.h"
 #include "src/types/components/text_input.h"
 #include "src/types/font_types.h"
 #include "unicode_str.h"
@@ -74,6 +75,7 @@ bool text_input_init(struct text_input_t *ti, struct font_t *font,
     return false;
   if (font == NULL)
     return false;
+  ti->id = base_id_generate();
   ti->font = font;
   ti->cursor_pos = 0;
   ti->focused = false;

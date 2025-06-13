@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 #include "src/components/font.h"
+#include "src/logic/base.h"
 #include "src/types/base.h"
 #include "src/types/components/button_types.h"
 
@@ -37,8 +38,8 @@ SDL_FRect button_get_rect(struct button_t *button) {
   return rect;
 }
 
-bool button_init(struct button_t *button, uint32_t id, struct font_t *font) {
-  button->id = id;
+bool button_init(struct button_t *button, struct font_t *font) {
+  button->id = base_id_generate();
   button->context = button;
   button->center = false;
   return label_init(&button->label, font);
@@ -52,7 +53,7 @@ bool button_render(struct base_t *obj, SDL_Renderer *ren) {
     return false;
   }
   if (!SDL_RenderFillRect(ren, &rect)) {
-    SDL_LogError(1, "could not render button %d\n", b->id);
+    SDL_LogError(1, "could not render button %lu\n", b->id);
     return false;
   }
   (void)label_set_center_pos(&b->label, rect.x + rect.w/2, rect.y + rect.h/2);

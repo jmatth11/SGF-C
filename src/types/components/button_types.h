@@ -8,12 +8,13 @@
 
 #include "src/types/font_types.h"
 #include "src/types/theme_types.h"
+#include "src/types/base.h"
 
 typedef void(*button_callback)(SDL_MouseButtonEvent *e, void* context);
 
 struct button_t {
   void *context;
-  uint32_t id;
+  base_id id;
   struct theme_t theme;
   /**
    * Properties h and w can be set to -1 to allow automatic sizing based on the label dimensions.

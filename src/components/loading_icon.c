@@ -3,6 +3,7 @@
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_surface.h"
+#include "src/logic/base.h"
 #include "src/logic/render.h"
 #include "src/types/base.h"
 #include "src/types/components/loading_icon.h"
@@ -16,6 +17,7 @@ bool loading_icon_init(struct loading_icon_t *icon, SDL_Renderer *ren, const cha
     SDL_LogError(1, "error loading image: \"%s\"", img);
     return false;
   }
+  icon->id = base_id_generate();
   icon->texture = t;
   icon->rotation_speed = 4.0f;
   icon->angle = 0;
@@ -62,7 +64,7 @@ bool loading_icon_render(struct base_t *obj, SDL_Renderer *ren) {
 }
 struct render_t loading_icon_get_render(struct loading_icon_t *icon) {
   struct base_t b = {
-    .id = 1,
+    .id = icon->id,
     .parent = icon,
   };
   struct render_t ren = {

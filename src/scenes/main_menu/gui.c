@@ -25,8 +25,8 @@ static bool button_handler(struct base_t *obj, SDL_Event *e) {
     if (e->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
       if (validate_user_data(&delegate->host_url, &delegate->user_data)) {
         delegate->loading = true;
-        SDL_Log("validated\n");
       } else {
+        // TODO display error message
         SDL_Log("user data is invalid!\n");
       }
     }
@@ -60,11 +60,12 @@ static bool setup_loading_icon(struct scene_t *scene, struct state_t *state) {
     return false;
   }
   SDL_Rect win_size = win_get_size(&state->win);
+  const float icon_size = 45;
   local->loading_icon.rect = (SDL_FRect){
-      .x = win_size.w * 0.5,
-      .y = win_size.h * 0.5,
-      .w = 45,
-      .h = 45,
+      .x = (win_size.w * 0.5) - (icon_size/2),
+      .y = (win_size.h * 0.5) - (icon_size/2),
+      .w = icon_size,
+      .h = icon_size,
   };
   local->loading_icon.background = (SDL_FRect){
       .x = 0,
@@ -78,10 +79,10 @@ static bool setup_loading_icon(struct scene_t *scene, struct state_t *state) {
 
 static bool setup_buttons(struct scene_t *scene, struct state_t *state) {
   struct scene_one_t *local = (struct scene_one_t *)scene->__internal;
-  if (!button_init(&local->start_btn, 1, &state->font)) {
+  if (!button_init(&local->start_btn, &state->font)) {
     return false;
   }
-  if (!button_init(&local->exit_btn, 2, &state->font)) {
+  if (!button_init(&local->exit_btn, &state->font)) {
     return false;
   }
   SDL_Rect win_size = win_get_size(&state->win);
@@ -166,7 +167,6 @@ static bool setup_title(struct scene_t *scene, struct state_t *state) {
 
 static bool setup_text_input(struct scene_t *scene, struct state_t *state) {
   struct scene_one_t *local = (struct scene_one_t *)scene->__internal;
-  local->host_url.id = 12;
   SDL_Rect win_size = win_get_size(&state->win);
   SDL_Rect title_size = label_get_size(&local->title);
   if (!text_input_init(&local->host_url, &state->font,

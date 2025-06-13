@@ -4,6 +4,12 @@
 #include <stdbool.h>
 #include <SDL3/SDL_events.h>
 
+#include <stdint.h>
+
+typedef uint64_t base_id;
+
+base_id base_id_generate();
+
 struct events_t;
 
 bool base_handle_mouse_event(struct events_t *e_handler, SDL_Event *e, struct events_t **focused);

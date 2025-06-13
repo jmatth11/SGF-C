@@ -9,9 +9,11 @@
 
 #include "array_template.h"
 
+typedef uint64_t base_id;
+
 struct base_t {
   void *parent;
-  uint64_t id;
+  base_id id;
 };
 
 typedef bool (*render_fn)(struct base_t *obj, SDL_Renderer *ren);

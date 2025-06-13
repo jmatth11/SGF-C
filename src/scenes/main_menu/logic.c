@@ -1,11 +1,14 @@
 #include "logic.h"
 
+#include "SDL3/SDL_log.h"
 #include "gap_buffer.h"
 #include "src/types/components/text_input.h"
+#include "src/types/user_data.h"
 #include "unicode_str.h"
 #include "websocket.h"
 #include "magic.h"
 #include <stddef.h>
+#include <SDL3/SDL_thread.h>
 
 static void free_codepoint_str(code_point_t **obj) {
   if (obj == NULL) {
@@ -39,5 +42,20 @@ bool validate_user_data(struct text_input_t *field, struct user_data *data) {
     return false;
   }
   data->data_url = u_str;
+  return true;
+}
+
+static int background_thread(void* data) {
+  struct user_data *local = (struct user_data*)data;
+  // TODO connect to websocket and handle errors/data
+  return 1;
+}
+
+bool start_web_thread(struct user_data *data) {
+  data->thread_parent = SDL_CreateThread(background_thread, "websocket", data);
+  if (data->thread_parent != NULL) {
+    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "could not create websocket thread\n");
+    return false;
+  }
   return true;
 }
