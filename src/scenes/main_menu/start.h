@@ -6,6 +6,7 @@
 #include "src/types/components/button_types.h"
 #include "src/types/components/loading_icon.h"
 #include "src/types/components/text_input.h"
+#include "src/types/components/toast_types.h"
 #include "src/types/font_types.h"
 #include "src/types/scene_types.h"
 #include "src/types/user_data.h"
@@ -17,6 +18,7 @@ struct scene_one_t {
   struct text_input_t host_url;
   struct user_data *user_data;
   struct loading_icon_t loading_icon;
+  struct toast_manager_t *toast_manager;
   bool exit_clicked;
   bool loading;
   bool loading_shown;

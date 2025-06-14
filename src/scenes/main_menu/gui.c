@@ -4,14 +4,17 @@
 #include "src/components/font.h"
 #include "src/components/loading_icon.h"
 #include "src/components/text_input.h"
+#include "src/components/toast.h"
 #include "src/components/win.h"
 #include "src/logic/scene.h"
 #include "src/scenes/main_menu/logic.h"
+#include "src/types/components/toast_types.h"
 #include "start.h"
 
 #define CONNECT_TEXT "CONNECT"
 #define EXIT_TEXT "EXIT"
 #define TITLE_TEXT "DB LISTENER"
+#define INVALID_URL "WebSocket URL is invalid."
 
 static struct scene_one_t *delegate = NULL;
 
@@ -31,8 +34,20 @@ static bool button_handler(struct base_t *obj, SDL_Event *e) {
           return false;
         }
       } else {
-        // TODO display error message
-        SDL_Log("user data is invalid!\n");
+        struct toast_t *toast = toast_create(
+          delegate->toast_manager->font,
+          INVALID_URL, strlen(INVALID_URL),
+          TOAST_ERROR, TOAST_BOTTOM_RIGHT, NULL);
+        if (toast == NULL) {
+          SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "failed to create toast message.\n");
+          return false;
+        }
+        if (!toast_manager_push(delegate->toast_manager, toast)) {
+          toast_destroy(&toast);
+          SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "failed to push toast message.\n");
+          return false;
+        }
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "user data is invalid!\n");
       }
     }
   } else if (obj->id == delegate->exit_btn.id) {
