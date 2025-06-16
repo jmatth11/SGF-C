@@ -10,6 +10,7 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3/SDL_log.h>
 #include "magic.h"
+#include "src/logic/render.h"
 
 bool loading_icon_init(struct loading_icon_t *icon, SDL_Renderer *ren, const char *img) {
   SDL_Texture *t = IMG_LoadTexture(ren, img);
@@ -33,19 +34,8 @@ void loading_icon_update(struct loading_icon_t *icon) {
 }
 bool loading_icon_render(struct base_t *obj, SDL_Renderer *ren) {
   struct loading_icon_t *icon = (struct loading_icon_t*)obj->parent;
-  const SDL_Color b_color = icon->background_color;
-  SDL_BlendMode old_mode = SDL_BLENDMODE_NONE;
-  if (!render_set_blendmode(ren, SDL_BLENDMODE_BLEND, &old_mode)) {
-    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "error setting blend mode for loading icon");
-  }
-  if (!SDL_SetRenderDrawColor(ren, b_color.r, b_color.g, b_color.b, b_color.a)) {
-    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "error setting render draw color for icon background");
-  }
-  if (!SDL_RenderFillRect(ren, &icon->background)) {
+  if (!render_transparent_fill_rect(ren, icon->background_color, &icon->background)) {
     SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "error rendering fill rect of icon background");
-  }
-  if (!render_set_blendmode(ren, old_mode, NULL)) {
-    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "error setting blend mode for loading icon");
   }
   SDL_FPoint center = {
     .x = icon->rect.w * 0.5f,

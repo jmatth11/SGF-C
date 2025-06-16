@@ -19,3 +19,18 @@ bool render_set_blendmode(SDL_Renderer *ren, SDL_BlendMode mode,
   }
   return true;
 }
+
+bool render_transparent_fill_rect(SDL_Renderer *ren, SDL_Color color,
+                                  SDL_FRect *rect) {
+  SDL_BlendMode old_mode = SDL_BLENDMODE_NONE;
+  if (!render_set_blendmode(ren, SDL_BLENDMODE_BLEND, &old_mode)) {
+    return false;
+  }
+  if (!SDL_SetRenderDrawColor(ren, color.r, color.g, color.b, color.a)) {
+    return false;
+  }
+  if (!SDL_RenderFillRect(ren, rect)) {
+    return false;
+  }
+  return render_set_blendmode(ren, old_mode, NULL);
+}

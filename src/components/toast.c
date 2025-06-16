@@ -194,16 +194,9 @@ static bool toast_render_fn(struct base_t *obj, SDL_Renderer *ren) {
     rect.w = label_size.w + 10;
   }
   toast_determine_placement(t, placement_rect, &rect);
-  SDL_BlendMode old_mode = SDL_BLENDMODE_NONE;
-  (void)render_set_blendmode(ren, SDL_BLENDMODE_BLEND, &old_mode);
-  SDL_SetRenderDrawColor(ren, background_color.r, background_color.g,
-                         background_color.b, background_color.a);
-  if (!SDL_RenderFillRect(ren, &rect)) {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION,
-                 "error rendering background rect for toast\n");
-    return false;
+  if (!render_transparent_fill_rect(ren, background_color, &rect)) {
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "failed to draw background of toast.\n");
   }
-  (void)render_set_blendmode(ren, old_mode, NULL);
   SDL_FPoint label_center = {
     .x = rect.x + (rect.w * 0.5),
     .y = rect.y + (rect.h * 0.5),

@@ -18,4 +18,15 @@
  */
 bool render_set_blendmode(SDL_Renderer *ren, SDL_BlendMode mode, SDL_BlendMode *old) __nonnull((1));
 
+/**
+ * Render a transparent fill rect with the given color.
+ * This method uses the SDL_BLENDMODE_BLEND to achieve transparency.
+ *
+ * @param ren The SDL Renderer.
+ * @param color The color of the rect.
+ * @param rect The destination rect to draw to.
+ * @return True on success, false otherwise.
+ */
+bool render_transparent_fill_rect(SDL_Renderer *ren, SDL_Color color, SDL_FRect *rect) __nonnull((1));
+
 #endif

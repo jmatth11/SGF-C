@@ -53,7 +53,7 @@ bool button_render(struct base_t *obj, SDL_Renderer *ren) {
     return false;
   }
   if (!SDL_RenderFillRect(ren, &rect)) {
-    SDL_LogError(1, "could not render button %lu\n", b->id);
+    SDL_LogError(1, "could not render button %u\n", b->id);
     return false;
   }
   (void)label_set_center_pos(&b->label, rect.x + rect.w/2, rect.y + rect.h/2);
