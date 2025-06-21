@@ -30,21 +30,24 @@ static bool button_handler(struct base_t *obj, SDL_Event *e) {
       if (validate_user_data(&delegate->host_url, delegate->user_data)) {
         delegate->loading = true;
         if (!start_web_thread(delegate->user_data)) {
-          SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "web thread failed to start\n");
+          SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                       "web thread failed to start\n");
           return false;
         }
       } else {
         struct toast_t *toast = toast_create(
-          delegate->toast_manager->font,
-          INVALID_URL, strlen(INVALID_URL),
-          TOAST_ERROR, TOAST_BOTTOM_RIGHT, NULL);
+            delegate->toast_manager->font, INVALID_URL, strlen(INVALID_URL),
+            TOAST_ERROR, TOAST_BOTTOM_RIGHT, NULL
+        );
         if (toast == NULL) {
-          SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "failed to create toast message.\n");
+          SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                       "failed to create toast message.\n");
           return false;
         }
         if (!toast_manager_push(delegate->toast_manager, toast)) {
           toast_destroy(&toast);
-          SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "failed to push toast message.\n");
+          SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                       "failed to push toast message.\n");
           return false;
         }
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "user data is invalid!\n");
@@ -52,7 +55,7 @@ static bool button_handler(struct base_t *obj, SDL_Event *e) {
     }
   } else if (obj->id == delegate->exit_btn.id) {
     if (e->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-      SDL_Log("clicked exit\n");
+      SDL_LogTrace(SDL_LOG_CATEGORY_APPLICATION, "clicked exit\n");
       delegate->exit_clicked = true;
     }
   }
