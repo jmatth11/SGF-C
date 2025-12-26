@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 struct config_t {
-  char* font_file;
+  char *font_file;
   size_t font_size;
 };
 

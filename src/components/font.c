@@ -1,9 +1,12 @@
 #include "font.h"
 #include "SDL3/SDL_log.h"
+#include "SDL3/SDL_rect.h"
 #include "SDL3_ttf/SDL_ttf.h"
+#include "src/logic/base.h"
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "src/logic/render.h"
 #include "src/types/base.h"
 #include "src/types/font_types.h"
 #include "unicode_str.h"
@@ -47,8 +50,10 @@ bool label_init(struct label_t *l, struct font_t *f) {
     return false;
   if (f == NULL)
     return false;
+  l->id = base_id_generate();
   l->font = f;
   l->text = NULL;
+  l->is_centered = false;
   l->str = unicode_str_create();
   if (l->str == NULL) {
     return false;
@@ -79,20 +84,35 @@ bool label_set_text(struct label_t *l, const char *text, size_t length) {
   return l->text != NULL;
 }
 
-static bool label_render_fn(struct base_t *obj, SDL_Renderer *ren) {
+static bool label_render_fn(struct base_t *obj, struct render_ctx_t *ctx) {
+  if (!render_check_args(obj, ctx)) {
+    return false;
+  }
   struct label_t *local = (struct label_t *)obj->parent;
-  return label_render(local, ren);
+  return label_render(local, ctx->ren);
+}
+
+static SDL_FRect label_get_viewable_size(struct base_t *b) {
+  struct label_t *local = (struct label_t *)b->parent;
+  SDL_Rect rect = label_get_size(local);
+  return (SDL_FRect){
+      .x = rect.x,
+      .y = rect.y,
+      .w = rect.w,
+      .h = rect.h,
+  };
 }
 
 struct render_t label_get_render(struct label_t *l) {
   struct base_t base = {
-      // TODO add id to label
-      .id = 1,
+      .id = l->id,
       .parent = l,
+      .priority = 0,
   };
   struct render_t result = {
       .base = base,
       .render = label_render_fn,
+      .get_viewable_rect = label_get_viewable_size,
   };
   return result;
 }
@@ -106,15 +126,31 @@ bool label_render(struct label_t *l, SDL_Renderer *ren) {
     SDL_LogError(1, "getting label text size failed: %s\n", SDL_GetError());
     return false;
   }
-  int x = l->center.x - (width / 2);
-  int y = l->center.y - (height / 2);
+  int x = l->position.x;
+  int y = l->position.y;
+  if (l->is_centered) {
+    x = l->position.x - (width / 2);
+    y = l->position.y - (height / 2);
+  }
   return TTF_DrawRendererText(l->text, x, y);
 }
 
 bool label_set_center_pos(struct label_t *l, int x, int y) {
-  l->center.x = x;
-  l->center.y = y;
+  l->is_centered = true;
+  l->position.x = x;
+  l->position.y = y;
   return true;
+}
+
+bool label_set_normal_pos(struct label_t *l, int x, int y) {
+  l->is_centered = false;
+  l->position.x = x;
+  l->position.y = y;
+  return true;
+}
+
+bool label_set_wrap_length(struct label_t *l, int width) {
+  return TTF_SetTextWrapWidth(l->text, width);
 }
 
 SDL_Rect label_get_size(struct label_t *l) {
@@ -124,8 +160,13 @@ SDL_Rect label_get_size(struct label_t *l) {
     SDL_LogError(1, "getting label text size failed: %s\n", SDL_GetError());
     return result;
   }
-  result.x = l->center.x - (width / 2);
-  result.y = l->center.y - (height / 2);
+  if (l->is_centered) {
+    result.x = l->position.x - (width / 2);
+    result.y = l->position.y - (height / 2);
+  } else {
+    result.x = l->position.x;
+    result.y = l->position.y;
+  }
   result.w = width;
   result.h = height;
   return result;

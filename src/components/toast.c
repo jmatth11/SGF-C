@@ -15,6 +15,7 @@
 #include "src/types/components/toast_types.h"
 #include "src/types/font_types.h"
 #include <SDL3/SDL_timer.h>
+#include <stdint.h>
 
 static bool toast_init(struct toast_t *t, struct font_t *font) {
   t->type = TOAST_ERROR;
@@ -168,7 +169,11 @@ static void toast_determine_placement(struct toast_t *t, SDL_Rect placement,
   }
 }
 
-static bool toast_render_fn(struct base_t *obj, SDL_Renderer *ren) {
+static bool toast_render_fn(struct base_t *obj, struct render_ctx_t *ctx) {
+  if (!render_check_args(obj, ctx)) {
+    return false;
+  }
+  SDL_Renderer *ren = ctx->ren;
   struct toast_t *t = (struct toast_t *)obj->parent;
   SDL_Rect placement_rect = (SDL_Rect){
       .x = t->placement_rect.x,
@@ -195,11 +200,12 @@ static bool toast_render_fn(struct base_t *obj, SDL_Renderer *ren) {
   }
   toast_determine_placement(t, placement_rect, &rect);
   if (!render_transparent_fill_rect(ren, background_color, &rect)) {
-    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "failed to draw background of toast.\n");
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                "failed to draw background of toast.\n");
   }
   SDL_FPoint label_center = {
-    .x = rect.x + (rect.w * 0.5),
-    .y = rect.y + (rect.h * 0.5),
+      .x = rect.x + (rect.w * 0.5),
+      .y = rect.y + (rect.h * 0.5),
   };
   (void)label_set_center_pos(&t->msg, label_center.x, label_center.y);
   if (!label_render(&t->msg, ren)) {
@@ -214,9 +220,12 @@ struct render_t toast_prepare_render(struct toast_t *t) {
   struct base_t base = {
       .id = t->id,
       .parent = t,
+      // pick a large number so we are on top
+      .priority = UINT32_MAX,
   };
   result.base = base;
   result.render = toast_render_fn;
+  result.get_viewable_rect = NULL;
   return result;
 }
 
@@ -313,7 +322,7 @@ void toast_manager_destroy(struct toast_manager_t **tm) {
   const size_t q_len = simple_queue_len((*tm)->toasts);
   for (size_t i = 0; i < q_len; ++i) {
     struct toast_t *tmp = NULL;
-    simple_queue_pop((*tm)->toasts, (void**)&tmp);
+    simple_queue_pop((*tm)->toasts, (void **)&tmp);
     if (tmp != NULL) {
       toast_destroy(&tmp);
     }

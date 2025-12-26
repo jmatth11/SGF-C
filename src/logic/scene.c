@@ -2,10 +2,33 @@
 #include "src/logic/base.h"
 #include "src/types/base.h"
 #include "src/types/scene_types.h"
+#include <SDL3/SDL_log.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <SDL3/SDL_log.h>
+
+/* comparison functions sort from smallest to largest. */
+
+static int render_compare(const void *a, const void *b) {
+  const struct render_t *obj1 = (struct render_t *)a;
+  const struct render_t *obj2 = (struct render_t *)b;
+  if (obj1->base.priority > obj2->base.priority)
+    return 1;
+  if (obj1->base.priority < obj2->base.priority)
+    return -1;
+  return 0;
+}
+static int events_compare(const void *a, const void *b) {
+  const struct events_t *obj1 = (struct events_t *)a;
+  const struct events_t *obj2 = (struct events_t *)b;
+  if (obj1->base.priority > obj2->base.priority)
+    return 1;
+  if (obj1->base.priority < obj2->base.priority)
+    return -1;
+  return 0;
+}
+
+/* scene functions */
 
 struct scene_t *scene_create() {
   struct scene_t *local = (struct scene_t *)malloc(sizeof(struct scene_t));
@@ -27,9 +50,14 @@ struct scene_t *scene_create() {
 }
 
 bool scene_add_child(struct scene_t *scene, struct render_t ren) {
-  return render_array_insert(&scene->children, ren);
+  if (!render_array_insert(&scene->children, ren)) {
+    return false;
+  }
+  qsort(scene->children.render_data, scene->children.len,
+        sizeof(struct render_t), render_compare);
+  return true;
 }
-bool scene_remove_child(struct scene_t* scene, uint64_t id) {
+bool scene_remove_child(struct scene_t *scene, uint64_t id) {
   for (size_t i = 0; i < scene->children.len; ++i) {
     if (scene->children.render_data[i].base.id == id) {
       if (!render_array_fast_remove(&scene->children, i)) {
@@ -41,7 +69,12 @@ bool scene_remove_child(struct scene_t* scene, uint64_t id) {
   return true;
 }
 bool scene_add_event_listener(struct scene_t *scene, struct events_t e) {
-  return events_array_insert(&scene->events, e);
+  if (!events_array_insert(&scene->events, e)) {
+    return false;
+  }
+  qsort(scene->events.events_data, scene->events.len, sizeof(struct events_t),
+        events_compare);
+  return true;
 }
 bool scene_add_collision_listener(struct scene_t *scene,
                                   struct collision_event_t c) {
@@ -51,12 +84,18 @@ bool scene_add_collision_listener(struct scene_t *scene,
 #ifdef DEBUG
 static void debug_event(struct events_t *obj) {
   fprintf(stdout, "base ID = %lu\n", obj->base.id);
-  fprintf(stdout, "focus_event is null %s\n", obj->focus_event == NULL ? "true" : "false");
-  fprintf(stdout, "unfocus_event is null %s\n", obj->unfocus_event == NULL ? "true" : "false");
-  fprintf(stdout, "point_in_rect is null %s\n", obj->pointInRect == NULL ? "true" : "false");
-  fprintf(stdout, "rect_in_rect is null %s\n", obj->rectInRect == NULL ? "true" : "false");
-  fprintf(stdout, "mouse_event is null %s\n", obj->mouse_event == NULL ? "true" : "false");
-  fprintf(stdout, "text_event is null %s\n", obj->text_event == NULL ? "true" : "false");
+  fprintf(stdout, "focus_event is null %s\n",
+          obj->focus_event == NULL ? "true" : "false");
+  fprintf(stdout, "unfocus_event is null %s\n",
+          obj->unfocus_event == NULL ? "true" : "false");
+  fprintf(stdout, "point_in_rect is null %s\n",
+          obj->pointInRect == NULL ? "true" : "false");
+  fprintf(stdout, "rect_in_rect is null %s\n",
+          obj->rectInRect == NULL ? "true" : "false");
+  fprintf(stdout, "mouse_event is null %s\n",
+          obj->mouse_event == NULL ? "true" : "false");
+  fprintf(stdout, "text_event is null %s\n",
+          obj->text_event == NULL ? "true" : "false");
   fflush(stdout);
 }
 #endif
