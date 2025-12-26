@@ -10,6 +10,8 @@ if [ ! -d "./deps/websocket-c" ]; then
   git clone https://github.com/jmatth11/websocket-c.git deps/websocket-c
 fi
 
+./build_deps.sh || exit 1
+
 ./install_sdl3_deps.sh || exit 1
 
 source ./install_emscripten.sh || exit 1

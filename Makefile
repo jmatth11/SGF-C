@@ -16,8 +16,6 @@ LIBS+=-L./deps/cstd/lib
 LIBS+=-lcustom_std
 LIBS+=-L./deps/websocket-c/zig-out/lib
 LIBS+=-l:libws.a
-LIBS+=-L./deps/frozen
-LIBS+=-l:libfrozen.a
 
 WEB_LIBS=-L./deps/sdl/web
 WEB_LIBS+=-L./deps/sdl_ttf/web
@@ -27,8 +25,6 @@ WEB_LIBS+=-L./deps/cstd/deps/utf8-zig/zig-out/lib/
 WEB_LIBS+=-lwebutf8-zig
 WEB_LIBS+=-L./deps/cstd/zig-out/lib
 WEB_LIBS+=-lwebcustom_std
-WEB_LIBS+=-L./deps/frozen
-WEB_LIBS+=-l:libfrozen.a
 
 INCLUDES=-I.
 INCLUDES+=-I./deps/sdl/include
@@ -37,7 +33,6 @@ INCLUDES+=-I./deps/sdl_image/include
 INCLUDES+=-I./deps/cstd/headers/
 INCLUDES+=-I./deps/cstd/deps/utf8-zig/headers
 INCLUDES+=-I./deps/websocket-c/headers
-INCLUDES+=-I./deps/frozen
 
 SOURCES=$(shell find ./src -name '*.c')
 OBJECTS=$(addprefix $(OBJ)/,$(SOURCES:%.c=%.o))
