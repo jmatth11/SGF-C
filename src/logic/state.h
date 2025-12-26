@@ -4,7 +4,6 @@
 #include "src/types/render_interface.h"
 #include <stdbool.h>
 
-
 struct state_t;
 struct scene_t;
 
@@ -13,7 +12,7 @@ struct scene_t;
  *
  * @return True for success, false otherwise.
  */
-bool state_init(struct state_t* s);
+bool state_init(struct state_t *s);
 /**
  * Queue the state to switch to a different scene on next update.
  *
@@ -23,6 +22,6 @@ bool state_switch_scene(struct state_t *s, struct scene_t *scene);
 /**
  * Free the state object.
  */
-void state_free(struct state_t* s);
+void state_free(struct state_t *s);
 
 #endif

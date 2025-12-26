@@ -14,9 +14,20 @@ typedef uint32_t base_id;
 struct base_t {
   void *parent;
   base_id id;
+  uint32_t priority;
 };
 
-typedef bool (*render_fn)(struct base_t *obj, SDL_Renderer *ren);
+/**
+ * Render context for a render function.
+ */
+struct render_ctx_t {
+  /* The main renderer. */
+  SDL_Renderer *ren;
+  /* The world for a scene, if one exists. Otherwize NULL. */
+  struct world_t *world;
+};
+
+typedef bool (*render_fn)(struct base_t *obj, struct render_ctx_t *ctx);
 typedef SDL_Rect (*collision_rect_fn)(struct base_t *obj);
 typedef bool (*collision_fn)(struct base_t *obj, void *other);
 typedef bool (*mouse_event_fn)(struct base_t *obj, SDL_Event *event);
@@ -25,6 +36,7 @@ typedef bool (*rect_check_fn)(struct base_t *b, SDL_FRect r);
 typedef bool (*text_event_fn)(struct base_t *b, SDL_Event *event);
 typedef bool (*focus_event_fn)(struct base_t *b, SDL_Event *e);
 typedef bool (*unfocus_event_fn)(struct base_t *b, SDL_Event *e);
+typedef SDL_FRect (*viewable_rect_fn)(struct base_t *b);
 
 // TODO maybe subscribe specifically for mouse events instead
 // of doing a check on every character
@@ -47,11 +59,12 @@ struct collision_event_t {
 struct render_t {
   struct base_t base;
   render_fn render;
+  viewable_rect_fn get_viewable_rect;
 };
 
 generate_array_template(base_obj, struct base_t)
-generate_array_template(events, struct events_t)
-generate_array_template(collision, struct collision_event_t)
-generate_array_template(render, struct render_t)
+    generate_array_template(events, struct events_t)
+        generate_array_template(collision, struct collision_event_t)
+            generate_array_template(render, struct render_t)
 
 #endif

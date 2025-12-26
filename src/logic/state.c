@@ -7,21 +7,21 @@
 #include "src/types/scene_types.h"
 #include "src/types/state.h"
 #include "unicode_str.h"
-#include "user_data.h"
 
-bool state_init(struct state_t* s) {
+bool state_init(struct state_t *s) {
   s->app_state = SDL_APP_CONTINUE;
   s->next_scene = NULL;
   s->current_scene = NULL;
   s->win.background = COLOR_BLACK;
-  if (!win_create_main(&s->win, "SGF Example", 640, 480)) {
+  if (!win_create_main(&s->win, "Projection", 800, 800)) {
     SDL_LogError(1, "failed to create main window.\n");
     return false;
   }
   // TODO pull this out to parse from an actual config file
   s->config.font_file = "resources/fonts/SourceCodePro-Regular.ttf";
   s->config.font_size = 18;
-  if (!font_init(&s->font, s->win.ren, s->config.font_file, s->config.font_size)) {
+  if (!font_init(&s->font, s->win.ren, s->config.font_file,
+                 s->config.font_size)) {
     SDL_LogError(1, "failed to create font.\n");
     return false;
   }
@@ -34,10 +34,7 @@ bool state_switch_scene(struct state_t *s, struct scene_t *scene) {
   return true;
 }
 
-void state_free(struct state_t* s) {
-  if (s->user_data != NULL) {
-    user_data_destroy(&s->user_data);
-  }
+void state_free(struct state_t *s) {
   state_switch_scene(s, NULL);
   font_free(&s->font);
   win_free(&s->win);

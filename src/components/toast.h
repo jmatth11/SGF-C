@@ -71,7 +71,8 @@ void toast_destroy(struct toast_t **t);
 struct toast_manager_t *toast_manager_create();
 bool toast_manager_push(struct toast_manager_t *tm, struct toast_t *toast)
     __nonnull((1, 2));
-bool toast_manager_update(struct toast_manager_t *tm, struct scene_t *scene) __nonnull((1));
+bool toast_manager_update(struct toast_manager_t *tm, struct scene_t *scene)
+    __nonnull((1));
 void toast_manager_destroy(struct toast_manager_t **tm);
 
 #endif

@@ -1,52 +1,83 @@
-CFLAGS=-Wall -O2 -Wextra -std=c11
-LIBS=-L./deps/sdl/build -L./deps/sdl_ttf/build -L./deps/sdl_image/build -lSDL3 -lSDL3_ttf -lSDL3_image -lm -pthread -L./deps/cstd/lib -lcustom_std -L./deps/websocket-c/zig-out/lib -l:libws.a
-WEB_LIBS=-L./deps/sdl/web -L./deps/sdl_ttf/web -l:libSDL3.a -l:libSDL3_ttf.a -L./deps/cstd/deps/utf8-zig/zig-out/lib/ -lwebutf8-zig -L./deps/cstd/zig-out/lib -lwebcustom_std
+CFLAGS=-Wall -Wextra -std=c11 -fsanitize=undefined
+# linker flag to satisfy GNU-stack warnings
+LINKER_FLAGS=-z noexecstack
+
+LIBS=-L./deps/sdl/build
+LIBS+=-L./deps/sdl_ttf/build
+LIBS+=-L./deps/sdl_image/build
+LIBS+=-lSDL3
+LIBS+=-lSDL3_ttf
+LIBS+=-lSDL3_image
+LIBS+=-lm
+LIBS+=-pthread
+LIBS+=-L./deps/cstd/deps/utf8-zig/zig-out/lib
+LIBS+=-lutf8-zig
+LIBS+=-L./deps/cstd/lib
+LIBS+=-lcustom_std
+LIBS+=-L./deps/websocket-c/zig-out/lib
+LIBS+=-l:libws.a
+LIBS+=-L./deps/frozen
+LIBS+=-l:libfrozen.a
+
+WEB_LIBS=-L./deps/sdl/web
+WEB_LIBS+=-L./deps/sdl_ttf/web
+WEB_LIBS+=-l:libSDL3.a
+WEB_LIBS+=-l:libSDL3_ttf.a
+WEB_LIBS+=-L./deps/cstd/deps/utf8-zig/zig-out/lib/
+WEB_LIBS+=-lwebutf8-zig
+WEB_LIBS+=-L./deps/cstd/zig-out/lib
+WEB_LIBS+=-lwebcustom_std
+WEB_LIBS+=-L./deps/frozen
+WEB_LIBS+=-l:libfrozen.a
+
+INCLUDES=-I.
+INCLUDES+=-I./deps/sdl/include
+INCLUDES+=-I./deps/sdl_ttf/include
+INCLUDES+=-I./deps/sdl_image/include
+INCLUDES+=-I./deps/cstd/headers/
+INCLUDES+=-I./deps/cstd/deps/utf8-zig/headers
+INCLUDES+=-I./deps/websocket-c/headers
+INCLUDES+=-I./deps/frozen
+
+SOURCES=$(shell find ./src -name '*.c')
+OBJECTS=$(addprefix $(OBJ)/,$(SOURCES:%.c=%.o))
+DEPS=$(shell find ./deps -maxdepth 2 -name Makefile -printf '%h\n' | grep -v 'unittest' | grep -v '^.$$')
+
+RESOURCE_DIR=./resources
 WEB_DIR=./web
 OBJ=obj
 BIN=bin
-INCLUDES=-I. -I./deps/sdl/include -I./deps/sdl_ttf/include -I./deps/sdl_image/include -I./deps/cstd/headers/ -I./deps/cstd/deps/utf8-zig/headers -I./deps/websocket-c/headers
-SOURCES=$(shell find ./src -name '*.c' -not -path './plugins/*' -not -path './deps/*' -not -path './libs/*')
-OBJECTS=$(addprefix $(OBJ)/,$(SOURCES:%.c=%.o))
-DEBUG_OBJECTS=$(patsubst %.c, $(OBJ)/%-debug.o, $(SOURCES))
-DEPS=$(shell find ./deps -maxdepth 2 -name Makefile -printf '%h\n' | grep -v 'unittest' | grep -v '^.$$')
-RESOURCE_DIR=./resources
+TARGET=main
+CC=clang
+
 ifeq ($(ARCH), web)
 $(info emscripten)
 CC=emcc
 TARGET=index.html
+undefine OBJECTS
+endif
+
+ifeq ($(DEBUG), 1)
+	CFLAGS+= -ggdb
 else
-$(info native)
-CC=clang
-TARGET=main
+	CFLAGS+= -O2
 endif
 
 .PHONY: all
 all: src
 
-.PHONY: web
-web:
-	$(CC) -fsanitize=undefined $(CFLAGS) $(INCLUDES) $(WEB_LIBS) -o $(WEB_DIR)/$(TARGET) $(SOURCES) --embed-file $(RESOURCE_DIR)
-
 .PHONY: src
 src: $(OBJECTS)
-	$(CC) $^ -O2 $(CFLAGS) $(LIBS) -o $(BIN)/$(TARGET)
-
-.PHONY: debug
-debug: deps_debug debugsrc
-
-.PHONY: debugsrc
-debugsrc: $(DEBUG_OBJECTS)
-	$(CC) $^ -ggdb $(CFLAGS) $(LIBS) -o $(BIN)/$(TARGET)
+ifeq ($(ARCH), web)
+	$(CC) $(CFLAGS) $(INCLUDES) $(WEB_LIBS) -o $(WEB_DIR)/$(TARGET) $(SOURCES) --embed-file $(RESOURCE_DIR)
+else
+	$(CC) $^ $(CFLAGS) -o $(BIN)/$(TARGET) $(LIBS) $(LINKER_FLAGS)
+endif
 
 $(OBJ)/%.o: %.c
 	@mkdir -p $(dir $@)
 	@mkdir -p $(BIN)
 	$(CC) -c -o $@ $< $(CFLAGS) $(INCLUDES)
-
-$(OBJ)/%-debug.o: %.c
-	@mkdir -p $(dir $@)
-	@mkdir -p $(BIN)
-	$(CC) -ggdb -c -o $@ $< $(CFLAGS) $(INCLUDES)
 
 .PHONY: clean
 clean:

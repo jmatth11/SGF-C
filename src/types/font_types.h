@@ -4,6 +4,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "array_template.h"
+#include "src/types/base.h"
 #include "unicode_str.h"
 
 struct font_t {
@@ -13,17 +14,19 @@ struct font_t {
 
 generate_array_template(font, struct font_t)
 
-struct font_manager_t {
+    struct font_manager_t {
   // TODO switch to hashmap lookup
   font_array fonts;
   TTF_TextEngine *engine;
 };
 
 struct label_t {
+  base_id id;
   struct font_t *font;
   TTF_Text *text;
   struct unicode_str_t *str;
-  SDL_Point center;
+  SDL_Point position;
+  bool is_centered;
   // TODO maybe add size property
 };
 

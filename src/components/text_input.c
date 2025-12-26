@@ -8,10 +8,14 @@
 #include "SDL3_ttf/SDL_ttf.h"
 #include "gap_buffer.h"
 #include "src/logic/base.h"
+#include "src/logic/render.h"
+#include "src/types/base.h"
 #include "src/types/components/text_input.h"
 #include "src/types/font_types.h"
+#include "src/types/render_interface.h"
 #include "unicode_str.h"
 #include "utf8.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -52,12 +56,12 @@ static SDL_FRect text_input_get_rect_or_default(struct text_input_t *ti) {
   if (ti->rect.h < 0) {
     if (text_h <= 0)
       text_h = 40;
-    text_box_rect.h = text_h + (TEXT_Y_BUFFER*2);
+    text_box_rect.h = text_h + (TEXT_Y_BUFFER * 2);
   }
   if (ti->rect.w < 0) {
     if (text_w < 120)
       text_w = 120;
-    text_box_rect.w = text_w + (TEXT_X_BUFFER*2);
+    text_box_rect.w = text_w + (TEXT_X_BUFFER * 2);
   }
   return text_box_rect;
 }
@@ -130,18 +134,20 @@ static bool mouse_event(struct base_t *obj, SDL_Event *e) {
     return false;
   }
   const size_t offset = sub_string.offset;
-  // grab the byte offset since our gap_buffer is in codepoints
-  size_t point_idx = codepoint_idx_from_byte_idx_char(
-      ti->text->text, strlen(ti->text->text), offset);
-  if (point_idx >= gap_len) {
-    SDL_LogWarn(1,
-                "computed codepoint idx was out of range: idx:%lu, len:%lu\n",
-                point_idx, gap_len);
-    // default to end of string
-    point_idx = gap_len;
+  if (gap_buffer_get_len(&ti->str) > 0) {
+    // grab the byte offset since our gap_buffer is in codepoints
+    size_t point_idx = codepoint_idx_from_byte_idx_char(
+        ti->text->text, strlen(ti->text->text), offset);
+    if (point_idx >= gap_len) {
+      SDL_LogWarn(1,
+                  "computed codepoint idx was out of range: idx:%lu, len:%lu\n",
+                  point_idx, gap_len);
+      // default to end of string
+      point_idx = gap_len;
+    }
+    ti->cursor_pos = point_idx;
+    gap_buffer_move_cursor(&ti->str, ti->cursor_pos);
   }
-  ti->cursor_pos = point_idx;
-  gap_buffer_move_cursor(&ti->str, ti->cursor_pos);
   return true;
 }
 
@@ -251,7 +257,11 @@ bool text_input_unfocus_event(struct base_t *obj, SDL_Event *e) {
   return true;
 }
 
-static bool text_input_render(struct base_t *obj, SDL_Renderer *ren) {
+static bool text_input_render(struct base_t *obj, struct render_ctx_t *ctx) {
+  if (!render_check_args(obj, ctx)) {
+    return false;
+  }
+  SDL_Renderer *ren = ctx->ren;
   struct text_input_t *ti = (struct text_input_t *)obj->parent;
   int text_w = 0, text_h = 0;
   if (!TTF_GetTextSize(ti->text, &text_w, &text_h))
@@ -309,10 +319,7 @@ static bool text_input_render(struct base_t *obj, SDL_Renderer *ren) {
 }
 
 struct events_t text_input_get_event(struct text_input_t *ti) {
-  struct base_t b = {
-      .parent = ti,
-      .id = ti->id,
-  };
+  struct base_t b = {.parent = ti, .id = ti->id, .priority = 0};
   struct events_t result = {
       .base = b,
       .focus_event = text_input_focus_event,
@@ -324,15 +331,17 @@ struct events_t text_input_get_event(struct text_input_t *ti) {
   };
   return result;
 }
+static SDL_FRect text_input_get_viewable_rect(struct base_t *b) {
+  struct text_input_t *ti = (struct text_input_t *)b->parent;
+  return text_input_get_rect_or_default(ti);
+}
 
 struct render_t text_input_get_render(struct text_input_t *ti) {
-  struct base_t base = {
-      .parent = ti,
-      .id = ti->id,
-  };
+  struct base_t base = {.parent = ti, .id = ti->id, .priority = 0};
   return (struct render_t){
       .base = base,
       .render = text_input_render,
+      .get_viewable_rect = text_input_get_viewable_rect,
   };
 }
 
