@@ -2,12 +2,14 @@
 
 # build cstd
 cd deps/cstd
-make
+./install_deps.sh
 zig build
+make
 cd -
 
 # build websocket-c
 cd deps/websocket-c
-zig build
+./install_deps
+zig build -Doptimize=ReleaseSafe
 cd -
 
