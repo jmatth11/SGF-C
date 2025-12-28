@@ -11,6 +11,20 @@ struct world_t {
   SDL_FRect rect;
   /* Scale factor for everything in the world. */
   float scale;
+  /* Focal length to use. Defaults to 1. */
+  float focal_length;
+  /**
+   * The Z projection close cutoff.
+   * This removes the object from view if the Z axis is too close to the camera.
+   * Defaults to 0.001.
+   */
+  float close_cutoff;
+  /**
+   * The Z projection far cutoff.
+   * This removes the object from view if the Z axis is too far from the camera.
+   * Defaults to 25.
+   */
+  float far_cutoff;
 };
 
 #endif

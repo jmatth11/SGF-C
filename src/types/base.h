@@ -27,6 +27,15 @@ struct render_ctx_t {
   struct world_t *world;
 };
 
+/**
+ *
+ */
+struct viewable_ctx_t {
+  /**
+   */
+  struct world_t *world;
+};
+
 typedef bool (*render_fn)(struct base_t *obj, struct render_ctx_t *ctx);
 typedef SDL_Rect (*collision_rect_fn)(struct base_t *obj);
 typedef bool (*collision_fn)(struct base_t *obj, void *other);
@@ -36,7 +45,8 @@ typedef bool (*rect_check_fn)(struct base_t *b, SDL_FRect r);
 typedef bool (*text_event_fn)(struct base_t *b, SDL_Event *event);
 typedef bool (*focus_event_fn)(struct base_t *b, SDL_Event *e);
 typedef bool (*unfocus_event_fn)(struct base_t *b, SDL_Event *e);
-typedef SDL_FRect (*viewable_rect_fn)(struct base_t *b);
+typedef SDL_FRect (*viewable_rect_fn)(struct base_t *b,
+                                      struct viewable_ctx_t *ctx);
 
 // TODO maybe subscribe specifically for mouse events instead
 // of doing a check on every character

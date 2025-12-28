@@ -92,7 +92,9 @@ static bool label_render_fn(struct base_t *obj, struct render_ctx_t *ctx) {
   return label_render(local, ctx->ren);
 }
 
-static SDL_FRect label_get_viewable_size(struct base_t *b) {
+static SDL_FRect label_get_viewable_size(struct base_t *b,
+                                         struct viewable_ctx_t *ctx) {
+  (void)ctx;
   struct label_t *local = (struct label_t *)b->parent;
   SDL_Rect rect = label_get_size(local);
   return (SDL_FRect){

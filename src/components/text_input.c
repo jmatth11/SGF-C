@@ -331,7 +331,9 @@ struct events_t text_input_get_event(struct text_input_t *ti) {
   };
   return result;
 }
-static SDL_FRect text_input_get_viewable_rect(struct base_t *b) {
+static SDL_FRect text_input_get_viewable_rect(struct base_t *b,
+                                              struct viewable_ctx_t *ctx) {
+  (void)ctx;
   struct text_input_t *ti = (struct text_input_t *)b->parent;
   return text_input_get_rect_or_default(ti);
 }

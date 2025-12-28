@@ -30,7 +30,7 @@ bool world_init_with_win(struct world_t *w, struct win_t *win)
  *
  * @return The updated rect.
  */
-SDL_FRect world_apply(struct world_t *w, SDL_FRect rect) __nonnull((1));
+SDL_FRect world_apply(const struct world_t *w, SDL_FRect rect) __nonnull((1));
 
 /**
  * Apply the properties of the world onto the given Entity structure.
@@ -39,7 +39,18 @@ SDL_FRect world_apply(struct world_t *w, SDL_FRect rect) __nonnull((1));
  *
  * @return The updated rect.
  */
-SDL_FRect world_apply_to_entity(struct world_t *w, struct entity_t ent)
+SDL_FRect world_apply_to_entity(const struct world_t *w, struct entity_t ent)
     __nonnull((1));
 
+/**
+ * Check if the rect should be drawn.
+ */
+bool world_should_draw(const struct world_t *w, const SDL_Rect *render_rect,
+                       const SDL_FRect *rect);
+
+/**
+ * Check if the entity should be drawn.
+ */
+bool world_should_draw_ent(const struct world_t *w, const SDL_Rect *render_rect,
+                           const struct entity_t *ent);
 #endif
