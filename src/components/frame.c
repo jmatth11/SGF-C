@@ -36,7 +36,9 @@ void frame_set_color(struct frame_t *frame, SDL_Color color) {
   frame->color = color;
 }
 
-static SDL_FRect frame_get_view_size(struct base_t *b) {
+static SDL_FRect frame_get_view_size(struct base_t *b,
+                                     struct viewable_ctx_t *ctx) {
+  (void)ctx;
   if (b == NULL) {
     return (SDL_FRect){0, 0, 0, 0};
   }

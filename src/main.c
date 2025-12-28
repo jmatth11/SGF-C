@@ -124,9 +124,15 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     struct render_t tmp = objs.render_data[i];
     bool should_render = true;
     if (tmp.get_viewable_rect != NULL) {
-      // TODO change get_viewable_rect to pass in ren_ctx as well.
-      SDL_FRect tmp_rect = tmp.get_viewable_rect(&tmp.base);
-      should_render = rectWithinRect(tmp_rect, render_rect);
+      struct viewable_ctx_t view_ctx = (struct viewable_ctx_t){
+          .world = s->current_scene->world,
+      };
+      SDL_FRect tmp_rect = tmp.get_viewable_rect(&tmp.base, &view_ctx);
+      if (tmp_rect.w == 0 || tmp_rect.h == 0) {
+        should_render = false;
+      } else {
+        should_render = rectWithinRect(tmp_rect, render_rect);
+      }
     }
     if (should_render) {
       tmp.render(&tmp.base, &ren_ctx);

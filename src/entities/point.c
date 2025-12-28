@@ -17,8 +17,8 @@
 #include "src/types/entities/math.h"
 
 /**
- * Initialize point.
- * Sets all values to zero.
+ * Initialize point with the given options.
+ * If options is NULL, the point is zeroed out.
  */
 bool point_init(struct point_t *p, struct point_options_t *options) {
   p->id = base_id_generate();
@@ -26,8 +26,8 @@ bool point_init(struct point_t *p, struct point_options_t *options) {
   p->color = COLOR_BLACK;
   if (options != NULL) {
     p->entity.coord = options->coord;
+    p->entity.proj = options->proj;
     p->entity.size = options->size;
-    p->entity.proj_z = options->proj_z;
     p->color = options->color;
   }
   return true;
@@ -67,17 +67,22 @@ static bool point_render_fn(struct base_t *obj, struct render_ctx_t *ctx) {
   return render_set_attributes(ren, &atts);
 }
 
-static SDL_FRect point_viewable_rect_fn(struct base_t *obj) {
+static SDL_FRect point_viewable_rect_fn(struct base_t *obj,
+                                        struct viewable_ctx_t *ctx) {
   if (obj == NULL || obj->parent == NULL) {
     return (SDL_FRect){0, 0, 0, 0};
   }
   struct point_t *p = (struct point_t *)obj->parent;
-  return (SDL_FRect){
+  SDL_FRect result = (SDL_FRect){
       .x = 0,
       .y = 0,
       .w = p->entity.size.w,
       .h = p->entity.size.h,
   };
+  if (ctx != NULL && ctx->world != NULL) {
+    result = world_apply_to_entity(ctx->world, p->entity);
+  }
+  return result;
 }
 
 /**

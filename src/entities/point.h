@@ -12,13 +12,13 @@ struct point_t;
  */
 struct point_options_t {
   struct coordinate_t coord;
+  struct coordinate_t proj;
   struct area_t size;
-  float proj_z;
   SDL_Color color;
 };
 
 /**
- * Initialize point.
+ * Initialize point with the given options.
  * If options is NULL, the point is zeroed out.
  */
 bool point_init(struct point_t *p, struct point_options_t *options);

@@ -2,6 +2,7 @@
 #define SGF_BASE_ENTITY
 
 #include <SDL3/SDL_rect.h>
+#include <stdbool.h>
 
 /**
  * Coordinate structure.
@@ -38,10 +39,12 @@ struct area_t {
 struct entity_t {
   /* The coordinate in space. */
   struct coordinate_t coord;
+  /* projection coordinates */
+  struct coordinate_t proj;
   /* The size of the entity. */
   struct area_t size;
-  /* Z value to add when projected. */
-  float proj_z;
+  /* Flag to adjust size with Z projection or not. */
+  bool adjust_size;
 };
 
 /**
@@ -50,8 +53,9 @@ struct entity_t {
 #define ZERO_ENTITY                                                            \
   (struct entity_t){                                                           \
       .coord = (struct coordinate_t){0, 0, 0},                                 \
+      .proj = (struct coordinate_t){0, 0, 0},                                  \
       .size = (struct area_t){0, 0},                                           \
-      .proj_z = 0,                                                             \
+      .adjust_size = false,                                                    \
   };
 
 #endif

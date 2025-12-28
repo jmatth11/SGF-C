@@ -29,8 +29,8 @@ static bool load(struct scene_t *scene, struct state_t *state) {
   }
   struct point_options_t options = (struct point_options_t){
       .coord = (struct coordinate_t){-0.25, -0.25, 0.25},
+      .proj = (struct coordinate_t){0, 0, 0},
       .size = (struct area_t){20, 20},
-      .proj_z = 0,
       .color = COLOR_GREEN,
   };
   for (int i = 0; i < 8; ++i) {
@@ -45,6 +45,7 @@ static bool load(struct scene_t *scene, struct state_t *state) {
     if (!point_init(p, &options)) {
       return false;
     }
+    p->entity.adjust_size = true;
     if (!scene_add_child(scene, point_get_render(p))) {
       return false;
     }
@@ -64,11 +65,11 @@ static bool update(struct scene_t *scene, struct state_t *state,
                    double deltatime) {
   (void)state;
   struct scene_one_t *local = (struct scene_one_t *)scene->__internal;
-  const double angle = PI * deltatime;
+  const double angle = (PI * deltatime);
   for (int i = 0; i < 8; ++i) {
     struct point_t *p = &local->points[i];
     (void)entity_rotate_xz(&p->entity, angle);
-    p->entity.proj_z += 1 * deltatime;
+    p->entity.proj.z += 1 * deltatime;
   }
   return true;
 }

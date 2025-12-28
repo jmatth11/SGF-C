@@ -76,7 +76,9 @@ bool button_set_text(struct button_t *button, const char *str, size_t len) {
   return label_set_text(&button->label, str, len);
 }
 
-static SDL_FRect button_get_viewable_rect(struct base_t *b) {
+static SDL_FRect button_get_viewable_rect(struct base_t *b,
+                                          struct viewable_ctx_t *ctx) {
+  (void)ctx;
   struct button_t *local = (struct button_t *)b->parent;
   return button_get_rect(local);
 }
