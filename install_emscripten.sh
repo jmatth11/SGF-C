@@ -16,6 +16,6 @@ else
   source ./emsdk_env.sh
   cd -
   ./build_emscripten.sh sdl
-  ./build_emscripten.sh sdl_ttf -DSDL3_DIR=../sdl/web -DSDLTTF_VENDORED=ON
+  ./build_emscripten.sh sdl_ttf -DSDL3_DIR=../sdl/web -DTTF_USE_HARFBUZZ -sUSE_HARFBUZZ -sUSE_FREETYPE -DSDLTTF_VENDORED=ON
   ./build_emscripten.sh sdl_image -DSDL3_DIR=../sdl/web -DSDLIMAGE_VENDORED=ON -DSDLIMAGE_AVIF=OFF -DDAV1D_ASM=OFF
 fi
