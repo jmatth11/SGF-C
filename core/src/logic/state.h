@@ -1,3 +1,8 @@
+/**
+ * @file state.h
+ * @brief Application state management functions.
+ */
+
 #ifndef GENERIC_STATE_H
 #define GENERIC_STATE_H
 
@@ -8,19 +13,30 @@ struct state_t;
 struct scene_t;
 
 /**
- * Initialize the application state.
+ * @brief Initialize the application state.
  *
- * @return True for success, false otherwise.
+ * Creates window, initializes font, and sets up default configuration.
+ *
+ * @param[out] s State structure to initialize.
+ * @return true on success, false on failure.
  */
 bool state_init(struct state_t *s);
+
 /**
- * Queue the state to switch to a different scene on next update.
+ * @brief Queue a scene switch.
  *
- * @return True for success, false otherwise.
+ * The switch will occur on the next update cycle.
+ *
+ * @param[out] s Application state.
+ * @param[in] scene New scene to switch to, or NULL to exit.
+ * @return true always.
  */
 bool state_switch_scene(struct state_t *s, struct scene_t *scene);
+
 /**
- * Free the state object.
+ * @brief Free application state resources.
+ *
+ * @param[out] s State to free.
  */
 void state_free(struct state_t *s);
 

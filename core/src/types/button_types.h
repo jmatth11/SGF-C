@@ -1,3 +1,8 @@
+/**
+ * @file button_types.h
+ * @brief Button type definition.
+ */
+
 #ifndef GENERIC_BUTTON_TYPES_H
 #define GENERIC_BUTTON_TYPES_H
 
@@ -10,24 +15,33 @@
 #include "../types/font_types.h"
 #include "../types/theme_types.h"
 
+/**
+ * @brief Button click callback function type.
+ *
+ * @param e The mouse button event data.
+ * @param context User-provided context pointer.
+ */
 typedef void (*button_callback)(SDL_MouseButtonEvent *e, void *context);
 
+/**
+ * @brief Button UI component.
+ */
 struct button_t {
+  /** @brief User-provided context passed to click callback. */
   void *context;
+  /** @brief Unique identifier for this button. */
   base_id id;
+  /** @brief Theme colors for the button. */
   struct theme_t theme;
-  /**
-   * Properties h and w can be set to -1 to allow automatic sizing based on the
-   * label dimensions.
-   */
+  /** @brief Button rectangle. Set w or h to -1 for auto-sizing based on label. */
   SDL_FRect rect;
+  /** @brief Optional texture for button background. */
   SDL_Texture *texture;
+  /** @brief Callback function invoked on button click. */
   button_callback onClick;
+  /** @brief The text label displayed on the button. */
   struct label_t label;
-  /**
-   * Flag to use the x and y properties of rect as center position instead of
-   * top left corner.
-   */
+  /** @brief If true, rect position is treated as center; otherwise top-left corner. */
   bool center;
 };
 

@@ -1,3 +1,8 @@
+/**
+ * @file point.h
+ * @brief Point entity functions.
+ */
+
 #ifndef SGF_POINT_H
 #define SGF_POINT_H
 
@@ -8,28 +13,42 @@
 struct point_t;
 
 /**
- * Options for the Point's initialize function.
+ * @brief Configuration options for point initialization.
  */
 struct point_options_t {
+  /** @brief Initial world coordinates. */
   struct coordinate_t coord;
+  /** @brief Initial projection offset. */
   struct coordinate_t proj;
+  /** @brief Size of the point. */
   struct area_t size;
+  /** @brief Point color. */
   SDL_Color color;
 };
 
 /**
- * Initialize point with the given options.
+ * @brief Initialize a point entity.
+ *
  * If options is NULL, the point is zeroed out.
+ *
+ * @param[out] p Pointer to point to initialize.
+ * @param[in] options Configuration options, or NULL for defaults.
+ * @return true on success, false on failure.
  */
 bool point_init(struct point_t *p, struct point_options_t *options);
 
 /**
- * Free point.
+ * @brief Free point resources.
+ *
+ * @param[out] p Pointer to point to free.
  */
 void point_free(struct point_t *p);
 
 /**
- * Get the render vtable of the point.
+ * @brief Get the render interface for this point.
+ *
+ * @param[in] p Pointer to the point.
+ * @return render_t structure with render functions.
  */
 struct render_t point_get_render(struct point_t *p);
 

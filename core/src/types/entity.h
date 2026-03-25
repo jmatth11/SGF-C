@@ -1,3 +1,8 @@
+/**
+ * @file entity.h
+ * @brief Entity type definitions for world objects.
+ */
+
 #ifndef SGF_BASE_ENTITY
 #define SGF_BASE_ENTITY
 
@@ -5,50 +10,60 @@
 #include <stdbool.h>
 
 /**
- * Coordinate structure.
- * Values should be represented from -1..1
+ * @brief 3D coordinate in world space.
+ *
+ * Coordinates should be normalized to the -1.0 to 1.0 range for consistent
+ * behavior with the world projection system.
  */
 struct coordinate_t {
+  /** @brief X coordinate. */
   float x;
+  /** @brief Y coordinate. */
   float y;
+  /** @brief Z coordinate (depth). */
   float z;
 };
 
 /**
- * Zeroed Coordinate.
+ * @brief Zeroed coordinate at the origin.
  */
-#define ZERO_COORD (struct coordinate_t){0, 0, 0};
+#define ZERO_COORD (struct coordinate_t){0, 0, 0}
 
 /**
- * Area structure.
+ * @brief 2D size/area structure.
  */
 struct area_t {
+  /** @brief Width. */
   float w;
+  /** @brief Height. */
   float h;
 };
 
 /**
- * Zeroed Area.
+ * @brief Zeroed area.
  */
-#define ZERO_AREA (struct area_t){0, 0};
+#define ZERO_AREA (struct area_t){0, 0}
 
 /**
- * Entity for a world.
- * Includes rect and projection on Z coordinate.
+ * @brief Entity for world rendering with 3D positioning.
+ *
+ * An entity exists in 3D space with a base coordinate and a projection
+ * offset. The projection Z determines the on-screen size via perspective
+ * scaling when adjust_size is enabled.
  */
 struct entity_t {
-  /* The coordinate in space. */
+  /** @brief Base coordinate in world space. */
   struct coordinate_t coord;
-  /* projection coordinates */
+  /** @brief Projection offset coordinate. Z affects on-screen size. */
   struct coordinate_t proj;
-  /* The size of the entity. */
+  /** @brief Size of the entity. */
   struct area_t size;
-  /* Flag to adjust size with Z projection or not. */
+  /** @brief If true, entity size scales based on projection Z. */
   bool adjust_size;
 };
 
 /**
- * Zeroed Entity.
+ * @brief Zeroed entity.
  */
 #define ZERO_ENTITY                                                            \
   (struct entity_t){                                                           \
@@ -56,6 +71,6 @@ struct entity_t {
       .proj = (struct coordinate_t){0, 0, 0},                                  \
       .size = (struct area_t){0, 0},                                           \
       .adjust_size = false,                                                    \
-  };
+  }
 
 #endif
