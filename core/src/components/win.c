@@ -2,9 +2,9 @@
 #include "../types/win_types.h"
 
 #ifdef __EMSCRIPTEN__
-#include "../../../platform/web/src/platform.h"
+#include "platform/web/src/platform.h"
 #else
-#include "../../../platform/native/src/platform.h"
+#include "platform/native/src/platform.h"
 #endif
 
 bool win_create_main(struct win_t *win, const char *title, int w, int h) {
