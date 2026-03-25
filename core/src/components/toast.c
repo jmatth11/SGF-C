@@ -30,17 +30,6 @@ static bool toast_init(struct toast_t *t, struct font_t *font) {
 }
 /**
  * Create a toast structure with the given data.
- *
- * @param font The font to use.
- * @param text The text to display.
- * @param length The length of the text.
- * @param _type The toast type. See enum toast_type_t. Invalid types default to
- * error type.
- * @param _placement The default placement. See enum toast_placement_t. Invalid
- * placements will default to bottom right.
- * @param window_size The rect size of the window to be placed on.
- * If NULL the renderer safe area size will be used.
- * @return True on success, false otherwise.
  */
 struct toast_t *toast_create(struct font_t *font, const char *text,
                              size_t length, int _type, int _placement,
@@ -61,21 +50,12 @@ struct toast_t *toast_create(struct font_t *font, const char *text,
 
 /**
  * Set the message of the toast structure.
- *
- * @param t The toast structure.
- * @param text The message.
- * @param length The length of the message.
- * @return True on success, false otherwise.
  */
 bool toast_set_message(struct toast_t *t, const char *text, size_t length) {
   return label_set_text(&t->msg, text, length);
 }
 /**
  * Set the toast's type.
- *
- * @param t The toast structure.
- * @param _type The type. See enum toast_type_t.
- * @return True on success, false otherwise.
  */
 bool toast_set_type(struct toast_t *t, int _type) {
   enum toast_type_t value = TOAST_ERROR;
@@ -95,11 +75,6 @@ bool toast_set_type(struct toast_t *t, int _type) {
 
 /**
  * Set the placement of the toast.
- *
- * @param t The toast structure.
- * @param _placement The default placement. See enum toast_placement_t. Invalid
- * placements will default to bottom right.
- * @return True on success, false otherwise.
  */
 bool toast_set_placement(struct toast_t *t, int _placement,
                          SDL_FRect *window_size) {

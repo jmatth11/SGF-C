@@ -15,10 +15,10 @@ struct component_t;
 /**
  * @brief Component get rect function type.
  *
- * @param component The component to get rectangle from.
+ * @param c The component to get rectangle from.
  * @return The component's rectangle in screen coordinates.
  */
-typedef SDL_FRect (*component_get_rect_fn)(struct component_t *);
+typedef SDL_FRect (*component_get_rect_fn)(struct component_t *c);
 
 /**
  * @brief Base component structure for generic UI components.

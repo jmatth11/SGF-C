@@ -4,4 +4,6 @@ build
 emscripten
 deps
 emsdk
+docs/
+sgf-c.tag
 
