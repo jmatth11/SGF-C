@@ -68,3 +68,7 @@ go build -o server main.go
 ./server -d ../../build
 ```
 Access at `localhost:8100`
+
+## Doxygen Generation
+
+Use the `scripts/generate_docs.sh` script to generate the doxygen files.
