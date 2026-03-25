@@ -213,16 +213,16 @@ generate_array_template(base_obj, struct base_t)
 /**
  * @brief Dynamic array of event handlers.
  */
-    generate_array_template(events, struct events_t)
+generate_array_template(events, struct events_t)
 
 /**
  * @brief Dynamic array of collision handlers.
  */
-        generate_array_template(collision, struct collision_event_t)
+generate_array_template(collision, struct collision_event_t)
 
 /**
  * @brief Dynamic array of renderable objects.
  */
-            generate_array_template(render, struct render_t)
+generate_array_template(render, struct render_t)
 
 #endif
