@@ -1,5 +1,4 @@
 CFLAGS=-Wall -Wextra -std=c11 -fsanitize=undefined
-# linker flag to satisfy GNU-stack warnings
 LINKER_FLAGS=-z noexecstack
 
 LIBS=-L./deps/sdl/build
@@ -27,6 +26,7 @@ WEB_LIBS+=-L./deps/cstd/zig-out/lib
 WEB_LIBS+=-lwebcustom_std
 
 INCLUDES=-I.
+INCLUDES+=-I./core
 INCLUDES+=-I./deps/sdl/include
 INCLUDES+=-I./deps/sdl_ttf/include
 INCLUDES+=-I./deps/sdl_image/include
@@ -34,23 +34,33 @@ INCLUDES+=-I./deps/cstd/headers/
 INCLUDES+=-I./deps/cstd/deps/utf8-zig/headers
 INCLUDES+=-I./deps/websocket-c/headers
 
-SOURCES=$(shell find ./src -name '*.c')
-OBJECTS=$(addprefix $(OBJ)/,$(SOURCES:%.c=%.o))
-DEPS=$(shell find ./deps -maxdepth 2 -name Makefile -printf '%h\n' | grep -v 'unittest' | grep -v '^.$$')
+CORE_SOURCES=$(shell find ./core/src -name '*.c')
+PLATFORM_NATIVE_SOURCES=$(shell find ./platform/native/src -name '*.c')
+PLATFORM_WEB_SOURCES=$(shell find ./platform/web/src -name '*.c')
 
-RESOURCE_DIR=./resources
-WEB_DIR=./web
+RESOURCES=./resources
 OBJ=obj
 BIN=bin
+BUILD=build
 TARGET=main
 CC=clang
 
 ifeq ($(ARCH), web)
-$(info emscripten)
+$(info Building for web)
 CC=emcc
+PLATFORM_SOURCES=$(PLATFORM_WEB_SOURCES)
 TARGET=index.html
-undefine OBJECTS
+OUT_DIR=$(BUILD)
+LIBS=$(WEB_LIBS)
+else
+$(info Building for native)
+PLATFORM_SOURCES=$(PLATFORM_NATIVE_SOURCES)
+OUT_DIR=$(BIN)
 endif
+
+SOURCES=$(CORE_SOURCES) $(PLATFORM_SOURCES)
+OBJECTS=$(addprefix $(OBJ)/,$(SOURCES:%.c=%.o))
+DEPS=$(shell find ./deps -maxdepth 2 -name Makefile -printf '%h\n' | grep -v 'unittest' | grep -v '^.$$')
 
 ifeq ($(DEBUG), 1)
 	CFLAGS+= -ggdb
@@ -64,20 +74,22 @@ all: src
 .PHONY: src
 src: $(OBJECTS)
 ifeq ($(ARCH), web)
-	$(CC) $(CFLAGS) $(INCLUDES) $(WEB_LIBS) -o $(WEB_DIR)/$(TARGET) $(SOURCES) --embed-file $(RESOURCE_DIR)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -o $(OUT_DIR)/$(TARGET) $(SOURCES) --embed-file $(RESOURCES)
 else
-	$(CC) $^ $(CFLAGS) -o $(BIN)/$(TARGET) $(LIBS) $(LINKER_FLAGS)
+	$(CC) $^ $(CFLAGS) -o $(OUT_DIR)/$(TARGET) $(LIBS) $(LINKER_FLAGS)
 endif
 
 $(OBJ)/%.o: %.c
 	@mkdir -p $(dir $@)
 	@mkdir -p $(BIN)
+	@mkdir -p $(BUILD)
 	$(CC) -c -o $@ $< $(CFLAGS) $(INCLUDES)
 
 .PHONY: clean
 clean:
 	@rm -rf $(OBJ)/* 2> /dev/null
 	@rm -f $(BIN)/* 2> /dev/null
+	@rm -f $(BUILD)/* 2> /dev/null
 
 #.PHONY: clean_deps
 #clean_deps:
@@ -98,4 +110,3 @@ clean_all: clean clean_deps
 #	@for i in $(DEPS); do\
 #		cd $${i} && ($(MAKE) debug || $(MAKE)) && cd -;\
 #	done
-

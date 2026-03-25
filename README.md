@@ -2,43 +2,73 @@
 
 **!! WORK IN PROGRESS !!**
 
-Project to have a general structure for me to create native and web apps with the SDL3 framework.
+Project to have a general structure for creating native and web apps with the SDL3 framework.
 
-This project will install and locally build all SDL/emscripten dependencies for native and emscripten builds.
+## Project Structure
 
+```
+SGF-C/
+├── core/              # Shared framework code
+│   └── src/
+│       ├── components/  # UI components
+│       ├── entities/    # Core entities
+│       ├── logic/      # Game logic
+│       ├── scenes/     # Scene definitions
+│       └── types/      # Type definitions
+├── platform/          # Platform-specific code
+│   ├── native/        # Native implementation
+│   └── web/           # Web implementation + Go server
+├── resources/         # Fonts, icons, assets
+├── scripts/           # Build and utility scripts
+├── deps/              # Dependencies
+├── bin/               # Native binary output
+├── build/             # Web build output
+└── obj/               # Object files
+```
 
 ## Install Dependencies
 
-Run the `./install_deps.sh` file to handle installing and building all needed dependencies.
+Run the install script:
+```bash
+./scripts/install/install.sh
+```
 
-## Build project
+## Build Project
 
 Use the `Makefile` to build the project.
 
-For native
+### Native Build
 ```bash
-$ make
+make
+```
+Output: `bin/main`
+
+### Web Build
+```bash
+make web ARCH=web
+```
+Output: `build/index.html`
+
+### Clean Built Files
+```bash
+make clean
 ```
 
-For emscripten
+## Run Project
+
+### Native
 ```bash
-$ make web ARCH=web
+./scripts/run.sh
 ```
 
-Clean built files
+### Web
 ```bash
-$ make clean
+cd platform/web
+go build -o server main.go
+./server -d ../../build
 ```
+Access at `localhost:8100`
 
-## Run the Project
+## Doxygen Generation
 
-Run the native build with the `./run.sh` file at the base of the repo.
-
-Run the emscripten field by building and running the Go application in `web`.
-
-```bash
-$ go build main.go
-$ ./main
-```
-
-It runs on `localhost:8100`.
+Use the `scripts/generate_docs.sh` script to generate the doxygen files.

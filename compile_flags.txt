@@ -1,4 +1,5 @@
 -I.
+-I./core
 -I./deps/sdl/include
 -I./deps/sdl_ttf/include
 -I./deps/sdl_image/include

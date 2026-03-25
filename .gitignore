@@ -1,7 +1,9 @@
 bin
 obj
+build
 emscripten
 deps
 emsdk
-
+docs/
+sgf-c.tag
 
