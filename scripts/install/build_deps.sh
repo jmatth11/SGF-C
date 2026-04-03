@@ -12,6 +12,6 @@ make
 cd -
 
 cd deps/websocket-c
-./install_deps
+./install_deps.sh
 zig build -Doptimize=ReleaseSafe
 cd -
