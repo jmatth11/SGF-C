@@ -1,4 +1,4 @@
-CFLAGS=-Wall -Wextra -std=c11 -fsanitize=undefined
+CFLAGS=-Wall -Wextra -std=c11 -fsanitize=address,undefined,leak
 LINKER_FLAGS=-z noexecstack
 
 LIBS=-L./deps/sdl/build
