@@ -6,7 +6,7 @@ PROJECT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "${PROJECT_DIR}"
 
 cd deps/cstd
-./install_deps.sh
+./scripts/install_deps.sh
 zig build
 make
 cd -

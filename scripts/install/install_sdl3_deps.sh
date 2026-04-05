@@ -19,7 +19,7 @@ fi
 
 if [ ! -d ./deps/sdl_image ]; then
   echo "================= installing SDL3 Image ================="
-  git clone --recurse-submodules --depth 1 --branch release-3.4.0 https://github.com/libsdl-org/SDL_image.git ./deps/sdl_image
+  git clone --recurse-submodules --depth 1 --branch release-3.4.2 https://github.com/libsdl-org/SDL_image.git ./deps/sdl_image
   "${SCRIPT_DIR}/../build/build_cmake.sh" sdl_image -DSDL3_DIR=../sdl/build -DSDLIMAGE_VENDORED=ON
 fi
 
